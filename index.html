@@ -648,6 +648,9 @@
   // 구글 앱스 스크립트 마스터 웹앱 연동 주소 설정
   const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzspEnbxPk3HlLWjyqLYQ1jKvoldLro8xA83lu-9yQ4Qdn-ac6p1WG7kD17ELPORNBeIA/exec";
 
+  // ⏱️ 설문 최초 진입 시점 트래킹 타임스탬프 기록
+  const SURVEY_START_TIME = new Date();
+
   const techList = [
     { id: 1, name: "저온 플라즈마 산화 공정", type: "공정 개선 기술" },
     { id: 2, name: "AI기반 극저온 식각 공정", type: "공정 개선 기술" },
@@ -660,61 +663,42 @@
   ];
 
   let currentTechIdx = 0;
-  let pageEntryTime = Date.now(); // 설문 시작 또는 첫 페이지 진입 시점 기록
-  let techDurations = [];        // 각 페이지별 체류 시간을 저장할 배열
-  let pageTimer = null; // 🔥 [추가 영역] 각 설명자료 페이지별 10초 타이머를 관리하기 위한 변수
+  let pageTimer = null; // 설명자료용 10초 타이머 변수
 
-// [추가할 로직 예시]
-const now = Date.now();
-const durationSec = Math.round((now - pageEntryTime) / 1000); // 밀리초를 초 단위로 변환
-
-// 현재 페이지(index)의 체류 시간 기록 (배열에 저장하거나 기존 전송 객체에 바인딩)
-techDurations[currentTechIndex] = durationSec; 
-
-// 다음 페이지로 전환되므로, 진입 시점을 현재 시각으로 새로 갱신!
-pageEntryTime = Date.now();
-
-
-
-  // 🔄 기존 goPage 함수를 타이머 제어 로직이 포함된 버전으로 업그레이드합니다.
+  // 페이지 레이아웃 스위칭 및 상단 스크롤 동기화 함수
   function goPage(pageId) {
     document.querySelectorAll('.survey-step').forEach(s => s.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
     window.scrollTo(0,0);
 
-    // 기존에 돌고 있던 타이머가 있다면 초기화 (이전/다음 마구 클릭 시 스크립트 꼬임 방지)
     if (pageTimer) {
-      clearTimeout(pageTimer);
+      clearInterval(pageTimer);
       pageTimer = null;
     }
 
-    // ⏳ 만약 진입한 페이지가 [A] 설명자료(A_page1 ~ A_page5) 중 하나라면 10초 가동
+    // 설명자료 가드: A_page1 ~ A_page5 진입 시 10초 락 구동
     if (pageId.startsWith('A_page')) {
-      // 현재 페이지 안에 있는 '다음' 혹은 '본설문 응답 시작하기' 버튼 찾기
       const currentPageEl = document.getElementById(pageId);
       const nextBtn = currentPageEl.querySelector('.btn-next');
 
       if (nextBtn) {
-        // 1. 즉시 버튼을 비활성화하고 스타일을 끈끈하게 변경
         nextBtn.disabled = true;
-        const originalText = nextBtn.innerText.replace(/ \(\d+초 후 이동 가능\)/g, ""); // 기존 숫자 흔적 제거
+        const originalText = nextBtn.innerText.replace(/ \(\d+초 후 이동 가능\)/g, "");
         nextBtn.innerText = `${originalText} (10초 후 이동 가능)`;
-        nextBtn.style.backgroundColor = "#6c757d"; // 읽는 중에는 회색 버튼으로 변경
+        nextBtn.style.backgroundColor = "#6c757d";
         nextBtn.style.cursor = "not-allowed";
 
         let timeLeft = 10;
         
-        // 2. 1초마다 버튼 내부의 카운트다운 숫자를 깎아주는 인터벌 타이머 구동
         pageTimer = setInterval(() => {
           timeLeft--;
           if (timeLeft > 0) {
             nextBtn.innerText = `${originalText} (${timeLeft}초 후 이동 가능)`;
           } else {
-            // 3. 10초가 완료되면 가드를 풀고 원래 파란색(또는 녹색) 버튼으로 복구
             clearInterval(pageTimer);
             nextBtn.disabled = false;
             nextBtn.innerText = originalText;
-            nextBtn.style.backgroundColor = pageId === 'A_page5' ? '#28a745' : '#0056b3'; // 5p는 녹색, 나머진 파란색
+            nextBtn.style.backgroundColor = pageId === 'A_page5' ? '#28a745' : '#0056b3';
             nextBtn.style.cursor = "pointer";
           }
         }, 1000);
@@ -722,6 +706,7 @@ pageEntryTime = Date.now();
     }
   }
 
+  // 3p 응답자 정보 기입 무결성 및 정규식 벨리데이션
   function validateAndGoToA() {
     let isValid = true;
     document.querySelectorAll('.req-info').forEach(input => {
@@ -762,6 +747,7 @@ pageEntryTime = Date.now();
     goPage('A_page1');
   }
 
+  // [B] 본설문 영역 카드 동적 빌더 및 실시간 인터락 바인딩
   function startPartB() {
     const container = document.getElementById('dynamicSurveyContainer');
     container.innerHTML = ""; 
@@ -779,7 +765,7 @@ pageEntryTime = Date.now();
           </p>
           
           <h2 style="color: #0056b3; border-left: 5px solid #0056b3; padding-left: 10px; margin-top: 30px; font-size: 17px; margin-bottom: 15px; line-height: 1.6;">
-            문 B${qNum}. 반도체 및 디스플레이 산업의 <span style="background-color: #e1f5fe; padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #004085;">${tech.type}</span> 내 <span style="background-color: #fff3cd; padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #004085;">'${tech.name}'</span>의 상용화 시점, 평균적인 비용 및 성능 전망을 위한 조사입니다. 귀하께서는 아래 항목들에 대하여 어떻게 예상하십니까?
+            문 B${qNum}. 반도체 및 디스플레이 산업의 <span style="background-color: #e1f5fe; padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #004b87;">${tech.type}</span> 내 <span style="background-color: #fff3cd; padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #004085;">'${tech.name}'</span>의 상용화 시점, 평균적인 비용 및 성능 전망을 위한 조사입니다. 귀하께서는 아래 항목들에 대하여 어떻게 예상하십니까?
           </h2>
 
           <div style="background-color: #f8f9fa; padding: 15px; border: 1px solid #ced4da; border-radius: 6px; margin-bottom: 25px;">
@@ -1094,6 +1080,7 @@ pageEntryTime = Date.now();
       checkRange(q6, card.querySelector('.err-range-q6'));
       card.querySelector('.err-q6').style.display = (q3.value && parseInt(q6.value) < parseInt(q3.value)) ? 'block' : 'none';
     });
+
     q7.addEventListener('input', () => {
       checkRange(q7, card.querySelector('.err-range-q7'));
       card.querySelector('.err-q7').style.display = (q3.value && parseInt(q7.value) > parseInt(q3.value)) ? 'block' : 'none';
@@ -1173,12 +1160,11 @@ pageEntryTime = Date.now();
       const q10 = parseInt(currentCard.querySelector('.q10-val').value);
       const q11 = parseInt(currentCard.querySelector('.q11-val').value);
 
+      // 📌 [요구사항 2 보완] 최초 상용화 및 50% 상용화 시점의 2025~2050 하드 바운더리 검증 추가
       if (q1 < 2025 || q1 > 2050 || q2 < 2025 || q2 > 2050) {
-        alert("연도 전망 중 오류가 있습니다. 범위를 다시 확인해주세요");
+        alert("연도 전망 범위 오류:\n① 최초 상용화 시점과 ② 50% 이상 상용화 시점은 반드시 2025년에서 2050년 사이의 연도로 입력하셔야 합니다.");
         return;
       }
-
-
 
       if (q3 < 0 || q3 > 100 || q4 < 0 || q4 > 100 || q5 < 0 || q5 > 100 ||
           q6 < 0 || q6 > 100 || q7 < 0 || q7 > 100 || q8 < 0 || q8 > 100 ||
@@ -1188,11 +1174,10 @@ pageEntryTime = Date.now();
       }
 
       if (q2 < q1 || q6 < q3 || q7 > q3 || q8 < q4 || q9 > q4 || q10 < q5 || q11 > q5) {
-        alert("전망치 대소 관계 설정에 오류가 있습니다.");
+        alert("전망치 대소 관계 설정에 오류가 있습니다. 하단의 안내 요건을 확인해 주세요.");
         return;
       }
 
-      // 8번째 기술카드 완료 후 추가 질문 섹션(part_C_container)으로 토글 전환
       if (currentTechIdx === 7) {
         goPage('part_C_container');
         return;
@@ -1208,50 +1193,41 @@ pageEntryTime = Date.now();
     updateTechNavigation();
   }
 
-  // C 섹션에서 B8로 안전하게 백트래킹 이동하기 위한 징검다리 제어 함수
   function backToB8() {
     currentTechIdx = 7;
     updateTechNavigation();
     goPage('part_B_container');
   }
 
-  // C 섹션 마감 데이터 밸리데이션 및 최종 구글 웹앱 DB 전송 파이프라인
- // C 섹션 마감 데이터 밸리데이션 및 최종 구글 웹앱 DB 전송 파이프라인
   function validateAndSubmitAll() {
-    // 문C1 라디오박스 검증
     const c1Checked = document.querySelector('input[name="c1_val"]:checked');
     if (!c1Checked) {
       alert("문C1. 귀하의 해당 산업 분야 경력 문항에 응답해 주세요.");
       return;
     }
 
-    // 문C2 체크박스 검증
     const c2Checked = document.querySelectorAll('input[name="c2_val"]:checked');
     if (c2Checked.length === 0) {
       alert("문C2. 귀하의 전문 분야를 최소 1개 이상 선택해 주세요.");
       return;
     }
-    // C2 기타 체크 시 주관식 공란 검증
     if (document.getElementById('c2_etc_chk').checked && !document.getElementById('c2_etc_txt').value.trim()) {
       alert("문C2의 기타 선택 내용을 텍스트 상자 안에 입력해 주세요.");
       document.getElementById('c2_etc_txt').focus();
       return;
     }
 
-    // 문C3 라디오박스 검증
     const c3Checked = document.querySelector('input[name="c3_val"]:checked');
     if (!c3Checked) {
       alert("문C3. 귀하께서 산업에 기여하는 역할 문항에 응답해 주세요.");
       return;
     }
-    // C3 기타 체크 시 주관식 공란 검증
     if (document.getElementById('c3_etc_rdo').checked && !document.getElementById('c3_etc_txt').value.trim()) {
       alert("문C3의 기타 선택 역할을 텍스트 상자 안에 입력해 주세요.");
       document.getElementById('c3_etc_txt').focus();
       return;
     }
 
-    // 데이터 적재 및 변조 파이싱 오브젝트 빌드
     let responses = [];
     techList.forEach((tech, i) => {
       const card = document.getElementById(`techCard_${i}`);
@@ -1275,7 +1251,6 @@ pageEntryTime = Date.now();
       });
     });
 
-    // C2 체크박스 다중 배열 데이터 정제화
     let c2SelectedValues = [];
     c2Checked.forEach(cb => {
       if (cb.value === "기타") {
@@ -1285,17 +1260,16 @@ pageEntryTime = Date.now();
       }
     });
 
-    // C3 데이터 최종 인덱싱 처리
-    let c3FinalValue = c1Checked.value;
+    let c3FinalValue = c3Checked.value;
     if (document.getElementById('c3_etc_rdo').checked) {
       c3FinalValue = `기타(${document.getElementById('c3_etc_txt').value.trim()})`;
     } else {
       c3FinalValue = c3Checked.value;
     }
 
-    // ⏱️ [추가 완료] 총 체류 시간 계산 연동
+    // ⏱️ [요구사항 1 반영] 최초 페이지 로드 이후 최종 완료 버튼까지 소요된 총 시간 연산
     const endTime = new Date();
-    const totalDiffMs = endTime - SURVEY_START_TIME; // 스크립트 시작시각과 비교
+    const totalDiffMs = endTime - SURVEY_START_TIME;
     const totalMinutes = Math.floor(totalDiffMs / 60000);
     const totalSeconds = Math.floor((totalDiffMs % 60000) / 1000);
     const durationString = `${totalMinutes}분 ${totalSeconds}초`;
@@ -1312,7 +1286,7 @@ pageEntryTime = Date.now();
         c2_specialty_group: c2SelectedValues.join(', '),
         c3_role_group: c3FinalValue,
         
-        // 📌 구글 시트에 새로 매핑할 소요 시간 데이터 열 주입!
+        // 📌 소요 시간 데이터 파라미터 바인딩 추가
         survey_duration: durationString 
       },
       responses: responses
@@ -1340,5 +1314,8 @@ pageEntryTime = Date.now();
     });
   }
 </script>
+
+
+
 </body>
 </html>
