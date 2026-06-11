@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>반도체·디스플레이 탄소중립 기술전망 2차 델파이 조사</title>
+  <style>
+    body { font-family: 'Malgun Gothic', sans-serif; max-width: 850px; margin: 30px auto; padding: 20px; line-height: 1.7; color: #333; background-color: #f4f6f9; }
+    .container { background-color: #fff; padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+    h1 { color: #004085; text-align: center; font-size: 26px; margin-bottom: 30px; border-bottom: 3px solid #004085; padding-bottom: 15px; }
+    h2 { color: #0056b3; border-left: 5px solid #0056b3; padding-left: 10px; margin-top: 30px; font-size: 20px; }
+    h3 { color: #28a745; font-size: 18px; margin-top: 25px; }
+    p, li { font-size: 15px; text-align: justify; }
+    .survey-step { display: none; }
+    .survey-step.active { display: block; }
+    .alert-box { background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px; font-weight: bold; }
+    .red { color: #dc3545; font-weight: bold; }
+    .btn-container { display: flex; justify-content: space-between; margin-top: 30px; gap: 15px; }
+    button { padding: 12px 25px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+    .btn-next { background-color: #0056b3; color: white; flex: 1; }
+    .btn-next:hover { background-color: #004085; }
+    .btn-prev { background-color: #6c757d; color: white; width: 120px; }
+    .btn-prev:hover { background-color: #545b62; }
+    button:disabled { background-color: #ced4da; color: #6c757d; cursor: not-allowed; }
+    
+    /* 테이블 스타일 */
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 14px; }
+    th, td { border: 1px solid #dee2e6; padding: 10px; text-align: center; }
+    th { background-color: #e9ecef; font-weight: bold; }
+
+    /* 폼 UI 스타일 */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 10px; }
+    label { font-weight: bold; display: block; margin-top: 15px; margin-bottom: 5px; }
+    input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; }
+    textarea { height: 90px; resize: vertical; }
+    
+    /* 체크박스 기술 선택 */
+    .tech-option { display: block; padding: 12px; background: #f8f9fa; border: 1px solid #ced4da; margin-bottom: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+    .tech-option:hover { background: #e9ecef; }
+    .tech-option input { margin-right: 12px; transform: scale(1.2); }
+    
+    /* 검증 에러 알림 */
+    .error-text { color: #dc3545; font-size: 13px; font-weight: bold; margin-top: 5px; display: none; }
+    .progress-bar { font-weight: bold; color: #0056b3; margin-bottom: 15px; text-align: right; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <form id="delphiForm">
+
+    <div class="survey-step active" id="step1">
+      <h1>탄소중립 기술DB 기반 온실가스 감축량 평가 과제<br><small>(반도체 및 디스플레이 산업)</small></h1>
+      <p>안녕하십니까? 먼저 귀중한 시간을 할애하여 설문에 응해주심에 진심으로 감사드립니다.</p>
+      <p>본 조사는 기후에너지환경부 산하 한국환경산업기술원의 지원을 받아 수행되는 연구의 일환으로, 반도체 및 디스플레이 산업 분야 핵심 감축 기술의 미래 정량 지표를 도출하는 것을 목적으로 합니다.</p>
+      
+      <div class="alert-box">
+        ㆍ 응답 기간: 2026년 6월 15일(월) ~ 6월 26일(금), 총 2주간<br>
+        ㆍ 본 조사는 총 3단계 델파이(Delphi) 조사 중 '2차 본 조사'에 해당합니다.<br>
+        ㆍ 설문에 끝까지 참여해주신 전문가분들께는 소정의 자문료를 지급해 드립니다.
+      </div>
+      
+      <h2>조사 구성 및 유의사항</h2>
+      <ul>
+        <li>본 조사는 정답을 요구하는 것이 아니며, 현업에서 축적하신 경험과 전문적 판단(암묵지)에 근거해 응답해 주시면 됩니다.</li>
+        <li>특정 기업의 성과 평가가 아닌, 산업 전반에 도입될 경우의 <strong>평균적인 효과</strong>를 기준으로 판단해 주십시오.</li>
+      </ul>
+      <div class="btn-container">
+        <button type="button" class="btn-next" onclick="nextStep(2)">조사 내용 확인하기 (Next)</button>
+      </div>
+    </div>
+
+
+    <div class="survey-step" id="step2">
+      <h1>A. 반도체 및 디스플레이 산업 현황</h1>
+      <p>국내 주요 기업들은 RE100 가입 및 독자적 가스 감축 설비(RCS, 플라즈마 스크러버 등) 운영을 통해 온실가스 감축을 추진하고 있습니다.</p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>기업명</th>
+            <th>RE100 달성 목표연도</th>
+            <th>2024년 국내 사업장 전환율</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>삼성전자 / SK하이닉스</td><td>2050년</td><td>24.8% / 29.9%</td></tr>
+          <tr><td>삼성디스플레이 / LG디스플레이</td><td>2050년</td><td>25.0% / 35.6%</td></tr>
+        </tbody>
+      </table>
+
+      <p>반도체 산업 온실가스는 Scope 2(간접 배출)가 70~80%, Scope 1(공정 배출)이 20~30%를 차지합니다. 공정 고도화에 따라 전력 사용량이 급증하므로, 본 연구는 <strong>공정 배출(Scope 1) 감축 핵심 기술</strong>에 집중하고자 합니다.</p>
+      
+      <h3>목표 공정 저감률 추이</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>2018년</th>
+            <th>2030년</th>
+            <th>2040년</th>
+            <th>2050년</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>공정 저감률 (%)</th>
+            <td>78.5%</td>
+            <td>93.0%</td>
+            <td>96.0%</td>
+            <td>99.5%</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="btn-container">
+        <button type="button" class="btn-prev" onclick="prevStep(1)">이전</button>
+        <button type="button" class="btn-next" onclick="nextStep(3)">인적사항 및 기술 선택하기 (Next)</button>
+      </div>
+    </div>
+
+
+    <div class="survey-step" id="step3">
+      <h1>B. 응답자 정보 및 대상 기술 선택</h1>
+      
+      <div class="grid-2">
+        <div>
+          <label>소속 / 직급 (미기입 가능)</label>
+          <input type="text" id="affiliation">
+        </div>
+        <div>
+          <label>성명 *</label>
+          <input type="text" id="name" class="req-info">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <label>전문 분야 *</label>
+          <select id="field" class="req-info">
+            <option value="">선택하세요</option>
+            <option value="반도체">반도체</option>
+            <option value="디스플레이">디스플레이</option>
+          </select>
+        </div>
+        <div>
+          <label>경력 (년수 입력) *</label>
+          <input type="number" id="experience" class="req-info" min="0">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <label>전화번호 *</label>
+          <input type="text" id="phone" class="req-info" placeholder="010-XXXX-XXXX">
+        </div>
+        <div>
+          <label>작성자 E-mail *</label>
+          <input type="email" id="email" class="req-info">
+        </div>
+      </div>
+
+      <h2>평가 대상 기술 선택 (중복 선택 가능)</h2>
+      <p class="note">귀하께서 전문성을 갖고 미래 수치 전망(암묵지)을 제시할 수 있는 기술을 선택해 주세요. 선택하신 기술의 설문 문항만 동적으로 매핑됩니다.</p>
+      
+      <div id="techSelectorGroup">
+        <label class="tech-option"><input type="checkbox" class="tech-box" value="1" data-name="저온 플라즈마 산화 공정"> 1. 저온 플라즈마 산화 공정</label>
+        <label class="tech-option"><input type="checkbox" class="tech-box" value="2" data-name="AI기반 극저온 식각 공정"> 2. AI기반 극저온 식각 공정</label>
+        <label class="tech-option"><input type="checkbox" class="tech-box" value="3" data-name="ALD 증착 및 저온 플라즈마 이온주입 공정"> 3. ALD 증착 및 저온 플라즈마 이온주입 공정</label>
+        <label class="tech-option"><input type="checkbox" class="tech-box" value="4" data-name="Hybrid 세정 공정"> 4. Hybrid 세정 공정</label>
+        <label class="tech-option"><input type="checkbox" class="tech-box" value="5" data-name="저 GWP 가스 이용 식각 공정"> 5. 저 GWP 가스 이용 식각 공정</label>
+        <label class="tech-option"><input type="checkbox" class="tech-box" value="6" data-name="저 GWP 가스 이용 증착 공정"> 6. 저 GWP 가스 이용 증착 공정</label>
+        <label class="tech-option"><input type="checkbox" class="tech-box" value="7" data-name="저 GWP 가스 이용 세정 공정"> 7. 저 GWP 가스 이용 세정 공정</label>
+        <label class="tech-option"><input type="checkbox" class="tech-box" value="8" data-name="증착/세정 공정용 Heat-cat-wet"> 8. 증착/세정 공정용 Heat-cat-wet</label>
+      </div>
+
+      <div class="btn-container">
+        <button type="button" class="btn-prev" onclick="prevStep(2)">이전</button>
+        <button type="button" class="btn-next" onclick="generateTechSurveys()">선택 기술 설문 시작하기 (Next)</button>
+      </div>
+    </div>
+
+
+    <div class="survey-step" id="step4">
+      <div id="dynamicSurveyContainer">
+        </div>
+      
+      <div class="btn-container">
+        <button type="button" class="btn-prev" id="dynamicPrevBtn" onclick="moveTechPage(-1)">이전 기술</button>
+        <button type="button" class="btn-next" id="dynamicNextBtn" onclick="moveTechPage(1)">다음 기술</button>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  // [중요] 본인의 구글 스프레드시트 Apps Script 웹 앱 URL을 기입하세요.
+  const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzspEnbxPk3HlLWjyqLYQ1jKvoldLro8xA83lu-9yQ4Qdn-ac6p1WG7kD17ELPORNBeIA/exec";
+
+  let selectedTechs = []; // 사용자가 체크한 기술 리스트
+  let currentTechIdx = 0; // 현재 풀고 있는 체크 기술의 인덱스
+
+  // 단순 페이지 전환 함수
+  function nextStep(stepNum) {
+    document.querySelectorAll('.survey-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + stepNum).classList.add('active');
+    window.scrollTo(0,0);
+  }
+  function prevStep(stepNum) {
+    nextStep(stepNum);
+  }
+
+  // 사용자가 선택한 기술들을 기반으로 동적 설문 양식 생성
+  function generateTechSurveys() {
+    // 인적사항 필수체크
+    let infoValid = true;
+    document.querySelectorAll('.req-info').forEach(input => {
+      if(!input.value.trim()) infoValid = false;
+    });
+    if(!infoValid) {
+      alert("인적사항의 필수(*) 항목을 모두 기입해 주세요.");
+      return;
+    }
+
+    selectedTechs = [];
+    document.querySelectorAll('.tech-box:checked').forEach(box => {
+      selectedTechs.push({
+        id: box.value,
+        name: box.getAttribute('data-name')
+      });
+    });
+
+    if(selectedTechs.length === 0) {
+      alert("전망 조사를 진행할 기술을 최소 1개 이상 선택해 주세요.");
+      return;
+    }
+
+    // 설문 HTML 주입 시작
+    const container = document.getElementById('dynamicSurveyContainer');
+    container.innerHTML = ""; 
+
+    selectedTechs.forEach((tech, index) => {
+      const cardHtml = `
+        <div class="tech-survey-card" id="techCard_${index}" style="display: ${index === 0 ? 'block' : 'none'};">
+          <div class="progress-bar">기술 진척도: ${index + 1} / ${selectedTechs.length}</div>
+          <h1>주요 감축기술 전망 [${tech.id}/8]</h1>
+          <h2>기술명: ${tech.name}</h2>
+          <p class="red">※ 실측값이 아닌 미래 전망치에 대한 귀하의 전문적 암묵지 의견을 입력해 주세요.</p>
+          
+          <h3>문 B1. 중립적(Mod) 전망 및 도입 시점</h3>
+          <div class="grid-2">
+            <div>
+              <label>① 최초 상용화 시점 (연도) *</label>
+              <input type="number" class="q1-val" min="2025" max="2050" placeholder="2025~2050" required>
+            </div>
+            <div>
+              <label>② 50% 이상 상용화 시점 (연도) *</label>
+              <input type="number" class="q2-val" min="2025" max="2050" placeholder="① 응답값 이상 입력 필수" required>
+              <div class="error-text err-q2">⚠️ 오류: 50% 이상 상용화 시점(②)은 최초 상용화 시점(①)보다 크거나 같아야 합니다.</div>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div>
+              <label>③ CAPEX 절감률 (%) *</label>
+              <input type="number" class="q3-val" min="0" max="100" placeholder="0~100" required>
+            </div>
+            <div>
+              <label>④ OPEX 절감률 (%) *</label>
+              <input type="number" class="q4-val" min="0" max="100" placeholder="0~100" required>
+            </div>
+            <div>
+              <label>⑤ 에너지 소비 감소율 (%) *</label>
+              <input type="number" class="q5-val" min="0" max="100" placeholder="0~100" required>
+            </div>
+          </div>
+
+          <label style="margin-top:15px;">※ 문 B1 응답 근거 및 이유 (분량 자유) *</label>
+          <div class="grid-3">
+            <textarea class="r-q1-q2" placeholder="①, ② 시점 판단 근거" required></textarea>
+            <textarea class="r-q3-q4" placeholder="③, ④ 비용 절감 근거" required></textarea>
+            <textarea class="r-q5" placeholder="⑤ 에너지 소비 감소 근거" required></textarea>
+          </div>
+
+          <h3>문 B1-1. 시나리오별 비용/성능 전망</h3>
+          <p class="red">※ 역전 방지 제약: 낙관적(Adv) ≥ 중립적(Mod) ≥ 비관적(Con) 크기가 유지되어야 합니다.</p>
+
+          <div class="grid-2">
+            <div>
+              <label>⑥ 낙관적(Adv) CAPEX 절감률 (%) *</label>
+              <input type="number" class="q6-val" min="0" max="100" required>
+              <div class="error-text err-q6">⚠️ 오류: 낙관적 수치는 중립적 수치(③)보다 크거나 같아야 합니다.</div>
+            </div>
+            <div>
+              <label>⑦ 비관적(Con) CAPEX 절감률 (%) *</label>
+              <input type="number" class="q7-val" min="0" max="100" required>
+              <div class="error-text err-q7">⚠️ 오류: 비관적 수치는 중립적 수치(③)보다 작거나 같아야 합니다.</div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label>⑧ 낙관적(Adv) OPEX 절감률 (%) *</label>
+              <input type="number" class="q8-val" min="0" max="100" required>
+              <div class="error-text err-viii">⚠️ 오류: 낙관적 수치는 중립적 수치(④)보다 크거나 같아야 합니다.</div>
+            </div>
+            <div>
+              <label>⑨ 비관적(Con) OPEX 절감률 (%) *</label>
+              <input type="number" class="q9-val" min="0" max="100" required>
+              <div class="error-text err-ix">⚠️ 오류: 비관적 수치는 중립적 수치(④)보다 작거나 같아야 합니다.</div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label>⑩ 낙관적(Adv) 에너지 감소율 (%) *</label>
+              <input type="number" class="q10-val" min="0" max="100" required>
+              <div class="error-text err-x">⚠️ 오류: 낙관적 수치는 중립적 수치(⑤)보다 크거나 같아야 합니다.</div>
+            </div>
+            <div>
+              <label>⑪ 비관적(Con) 에너지 감소율 (%) *</label>
+              <input type="number" class="q11-val" min="0" max="100" required>
+              <div class="error-text err-xi">⚠️ 오류: 비관적 수치는 중립적 수치(⑤)보다 작거나 같아야 합니다.</div>
+            </div>
+          </div>
+
+          <label style="margin-top:15px;">※ 문 B1-1 시나리오별 응답 근거 및 이유 *</label>
+          <div class="grid-3">
+            <textarea class="r-q6-q7" placeholder="⑥, ⑦ CAPEX 시나리오 근거" required></textarea>
+            <textarea class="r-q8-q9" placeholder="⑧, ⑨ OPEX 시나리오 근거" required></textarea>
+            <textarea class="r-q10-q11" placeholder="⑩, ⑪ 에너지 시나리오 근거" required></textarea>
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', cardHtml);
+      bindRealtimeValidation(index); // 실시간 락 제약 이벤트 바인딩
+    });
+
+    currentTechIdx = 0;
+    updateTechNavigation();
+    nextStep(4);
+  }
+
+  // 실시간 입력 연동 및 즉각 대소 체크 경고 로직
+  function bindRealtimeValidation(idx) {
+    const card = document.getElementById(`techCard_${idx}`);
+    const q1 = card.querySelector('.q1-val');
+    const q2 = card.querySelector('.q2-val');
+    const q3 = card.querySelector('.q3-val');
+    const q4 = card.querySelector('.q4-val');
+    const q5 = card.querySelector('.q5-val');
+    const q6 = card.querySelector('.q6-val');
+    const q7 = card.querySelector('.q7-val');
+    const q8 = card.querySelector('.q8-val');
+    const q9 = card.querySelector('.q9-val');
+    const q10 = card.querySelector('.q10-val');
+    const cardQ11 = card.querySelector('.q11-val');
+
+    function checkY() {
+      card.querySelector('.err-q2').style.display = (q1.value && q2.value && parseInt(q2.value) < parseInt(q1.value)) ? 'block' : 'none';
+    }
+    q1.addEventListener('input', checkY);
+    q2.addEventListener('input', checkY);
+
+    q6.addEventListener('input', () => {
+      card.querySelector('.err-q6').style.display = (q3.value && q6.value && parseInt(q6.value) < parseInt(q3.value)) ? 'block' : 'none';
+    });
+    q7.addEventListener('input', () => {
+      card.querySelector('.err-q7').style.display = (q3.value && q7.value && parseInt(q7.value) > parseInt(q3.value)) ? 'block' : 'none';
+    });
+    q8.addEventListener('input', () => {
+      card.querySelector('.err-viii').style.display = (q4.value && q8.value && parseInt(q8.value) < parseInt(q4.value)) ? 'block' : 'none';
+    });
+    q9.addEventListener('input', () => {
+      card.querySelector('.err-ix').style.display = (q4.value && q9.value && parseInt(q9.value) > parseInt(q4.value)) ? 'block' : 'none';
+    });
+    q10.addEventListener('input', () => {
+      card.querySelector('.err-x').style.display = (q5.value && q10.value && parseInt(q10.value) < parseInt(q5.value)) ? 'block' : 'none';
+    });
+    cardQ11.addEventListener('input', () => {
+      card.querySelector('.err-xi').style.display = (q5.value && cardQ11.value && parseInt(cardQ11.value) > parseInt(q5.value)) ? 'block' : 'none';
+    });
+  }
+
+  // 순방향 / 역방향 탭 컨트롤러
+  function updateTechNavigation() {
+    document.querySelectorAll('.tech-survey-card').forEach((card, i) => {
+      card.style.display = (i === currentTechIdx) ? 'block' : 'none';
+    });
+
+    const nextBtn = document.getElementById('dynamicNextBtn');
+    if (currentTechIdx === selectedTechs.length - 1) {
+      nextBtn.innerText = "설문 최종 제출하기";
+      nextBtn.style.backgroundColor = "#28a745";
+    } else {
+      nextBtn.innerText = "다음 기술 (Next)";
+      nextBtn.style.backgroundColor = "#0056b3";
+    }
+    window.scrollTo(0,0);
+  }
+
+  function moveTechPage(dir) {
+    // 다음 버튼을 눌렀을 때 현재 탭 유효성 수치 최종 검증
+    if (dir === 1) {
+      const currentCard = document.getElementById(`techCard_${currentTechIdx}`);
+      const inputs = currentCard.querySelectorAll('input[required], textarea[required]');
+      
+      // 누락 체크
+      let fillAll = true;
+      inputs.forEach(el => { if(!el.value.trim()) fillAll = false; });
+      if(!fillAll) {
+        alert("현재 기술 전망의 모든 필수 문항과 근거 사유를 빠짐없이 기입해 주세요.");
+        return;
+      }
+
+      // 수치 논리성 체크
+      const q1 = parseInt(currentCard.querySelector('.q1-val').value);
+      const q2 = parseInt(currentCard.querySelector('.q2-val').value);
+      const q3 = parseInt(currentCard.querySelector('.q3-val').value);
+      const q4 = parseInt(currentCard.querySelector('.q4-val').value);
+      const q5 = parseInt(currentCard.querySelector('.q5-val').value);
+      const q6 = parseInt(currentCard.querySelector('.q6-val').value);
+      const q7 = parseInt(currentCard.querySelector('.q7-val').value);
+      const q8 = parseInt(currentCard.querySelector('.q8-val').value);
+      const q9 = parseInt(currentCard.querySelector('.q9-val').value);
+      const q10 = parseInt(currentCard.querySelector('.q10-val').value);
+      const cardQ11 = parseInt(currentCard.querySelector('.q11-val').value);
+
+      if (q2 < q1 || q6 < q3 || q7 > q3 || q8 < q4 || q9 > q4 || q10 < q5 || cardQ11 > q5) {
+        alert("입력한 전망치 대소 관계에 오류가 있습니다. 빨간색 안내 메시지를 지켜주세요.");
+        return;
+      }
+
+      // 마지막 페이지였으면 서버 전송 실행
+      if (currentTechIdx === selectedTechs.length - 1) {
+        submitAllData();
+        return;
+      }
+    }
+
+    if (dir === -1 && currentTechIdx === 0) {
+      // 첫 번째 기술에서 이전을 누르면 기술 선택 화면(Step3)으로 회귀
+      nextStep(3);
+      return;
+    }
+
+    currentTechIdx += dir;
+    updateTechNavigation();
+  }
+
+  // 최종 패킹 및 구글 스프레드시트 전송
+  function submitAllData() {
+    let responses = [];
+
+    selectedTechs.forEach((tech, i) => {
+      const card = document.getElementById(`techCard_${i}`);
+      responses.push({
+        techName: tech.name,
+        q1: parseInt(card.querySelector('.q1-val').value),
+        q2: parseInt(card.querySelector('.q2-val').value),
+        q3: parseInt(card.querySelector('.q3-val').value),
+        q4: parseInt(card.querySelector('.q4-val').value),
+        q5: parseInt(card.querySelector('.q5-val').value),
+        reason_q1_q2: card.querySelector('.r-q1-q2').value,
+        reason_q3_q4: card.querySelector('.r-q3-q4').value,
+        reason_q5: card.querySelector('.r-q5').value,
+        q6: parseInt(card.querySelector('.q6-val').value),
+        q7: parseInt(card.querySelector('.q7-val').value),
+        q8: parseInt(card.querySelector('.q8-val').value),
+        q9: parseInt(card.querySelector('.q9-val').value),
+        q10: parseInt(card.querySelector('.q10-val').value),
+        q11: parseInt(card.querySelector('.q11-val').value),
+        reason_q6_q7: card.querySelector('.r-q6-q7').value,
+        reason_q8_q9: card.querySelector('.r-q8-q9').value,
+        reason_q10_q11: card.querySelector('.r-q10-q11').value
+      });
+    });
+
+    const finalPayload = {
+      userInfo: {
+        affiliation: document.getElementById('affiliation').value,
+        name: document.getElementById('name').value,
+        field: document.getElementById('field').value,
+        experience: document.getElementById('experience').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value
+      },
+      responses: responses
+    };
+
+    const nextBtn = document.getElementById('dynamicNextBtn');
+    nextBtn.innerText = "데이터 서버 전송 중...";
+    nextBtn.disabled = true;
+
+    fetch(GOOGLE_WEB_APP_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(finalPayload)
+    })
+    .then(() => {
+      alert("모든 기술의 전망 조사가 안전하게 전송 및 최종 제출되었습니다. 감사합니다!");
+      location.reload();
+    })
+    .catch(err => {
+      alert("전송 도중 네트워크 오류가 발생했습니다. 다시 시도해 주세요.");
+      console.error(err);
+      nextBtn.disabled = false;
+      nextBtn.innerText = "설문 최종 제출하기";
+    });
+  }
+</script>
+</body>
+</html>
