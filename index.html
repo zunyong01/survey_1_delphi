@@ -646,7 +646,7 @@
 
 <script>
   // 구글 앱스 스크립트 마스터 웹앱 연동 주소 설정
-  const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzspEnbxPk3HlLWjyqLYQ1jKvoldLro8xA83lu-9yQ4Qdn-ac6p1WG7kD17ELPORNBeIA/exec";
+  const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzmovslujhL-jEfjDPag4DK1ohYvYozow-k59W2hbhyfWdqKD0fWWRoZYp47wCPpZSMEg/exec";
 
   // ⏱️ 설문 최초 진입 시점 트래킹 타임스탬프 기록
   const SURVEY_START_TIME = new Date();
@@ -1199,6 +1199,7 @@
     goPage('part_B_container');
   }
 
+  // C 섹션 마감 데이터 밸리데이션 및 최종 구글 웹앱 DB 전송 파이프라인
   function validateAndSubmitAll() {
     const c1Checked = document.querySelector('input[name="c1_val"]:checked');
     if (!c1Checked) {
@@ -1228,9 +1229,12 @@
       return;
     }
 
+    // 데이터 적재 오브젝트 빌드 정밀화 보완
     let responses = [];
     techList.forEach((tech, i) => {
       const card = document.getElementById(`techCard_${i}`);
+      
+      // 가독성 및 누락 가드를 위한 동적 쿼리 셀렉터 데이터 바인딩
       responses.push({
         techName: tech.name,
         q1: parseInt(card.querySelector('.q1-val').value),
@@ -1247,7 +1251,11 @@
         q9: parseInt(card.querySelector('.q9-val').value),
         q10: parseInt(card.querySelector('.q10-val').value),
         q11: parseInt(card.querySelector('.q11-val').value),
-        reason_q6_q7: card.querySelector('.r-q6-q7').value
+        
+        // 📌 [정정 완료] 기존 누락되었던 시나리오별 OPEX/에너지 판단 근거 폼 바인딩 동기화
+        reason_q6_q7: card.querySelector('.r-q6-q7').value,
+        reason_q8_q9: card.querySelector('.r-q8-q9') ? card.querySelector('.r-q8-q9').value : "",
+        reason_q10_q11: card.querySelector('.r-q10-q11') ? card.querySelector('.r-q10-q11').value : ""
       });
     });
 
@@ -1263,11 +1271,9 @@
     let c3FinalValue = c3Checked.value;
     if (document.getElementById('c3_etc_rdo').checked) {
       c3FinalValue = `기타(${document.getElementById('c3_etc_txt').value.trim()})`;
-    } else {
-      c3FinalValue = c3Checked.value;
     }
 
-    // ⏱️ [요구사항 1 반영] 최초 페이지 로드 이후 최종 완료 버튼까지 소요된 총 시간 연산
+    // ⏱️ 페이지 로드 이후 최종 완료 버튼까지 소요된 총 시간 문자열 처리
     const endTime = new Date();
     const totalDiffMs = endTime - SURVEY_START_TIME;
     const totalMinutes = Math.floor(totalDiffMs / 60000);
@@ -1285,8 +1291,6 @@
         c1_experience_group: c1Checked.value,
         c2_specialty_group: c2SelectedValues.join(', '),
         c3_role_group: c3FinalValue,
-        
-        // 📌 소요 시간 데이터 파라미터 바인딩 추가
         survey_duration: durationString 
       },
       responses: responses
@@ -1313,6 +1317,7 @@
       submitBtn.innerText = "설문 최종 제출하기 (Submit)";
     });
   }
+  
 </script>
 
 
