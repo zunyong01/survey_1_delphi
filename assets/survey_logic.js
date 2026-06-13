@@ -178,7 +178,7 @@ function startPartB() {
             <div>
               <label style="font-weight: bold; display: block; margin-bottom: 5px;">② 50% 이상 상용화 시점 (기술확산 정점시기) :</label>
               <div style="display: flex; align-items: center; gap: 5px;">
-                <input type="number" class="q2-val" min="2025" max="2050" placeholder="연도 입력" style="flex: 1;" required>
+                <input type="number" class="q2-val" min="2025" max="2050" placeholder="2025~2050" style="flex: 1;" required>
                 <span style="font-weight: bold;">년</span>
               </div>
               <span class="red" style="font-size: 12px; display: block; margin-top: 4px; line-height: 1.4;">- 기술 도입이 확산되어, 반디 산업 내 50% 이상 생산공정에서 기술이 상용화 될 것으로 예상되는 시점(연도) (2025~2050 사이의 숫자로 응답해주세요, 그리고 ② ≥ ① 으로 크기 순서를 유지하여 기입하여 주세요)</span>
@@ -708,24 +708,36 @@ function validateAndSubmitAll() {
     responses: responses
   };
 
+// 9. 로딩 상태 UI 전환 및 중복 클릭 가드 통제
   const submitBtn = document.querySelector('#part_C_container .btn-next');
   submitBtn.innerText = "서버로 데이터 전송 중...";
   submitBtn.disabled = true;
 
+  // 10. CORS 핸들러 우회 안전 비동기 데이터 송신
   fetch(GOOGLE_WEB_APP_URL, {
     method: 'POST',
-    mode: 'no-cors',
+    mode: 'no-cors', // 구글 웹앱 보안 정책 준수 대응
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
   .then(() => {
-    alert("모든 응답 데이터가 서버로 최종 완벽 전송되었습니다.");
+    // 📌 no-cors 모드 특성상 통신이 성립되면 즉시 마감 페이지로 안전 이동 처리 (알림 중복 방지)
     goPage('end_page_container');
+    
+    // 타임아웃 딜레이를 주어 비동기 흐름이 캐치 블록으로 튀는 현상을 원천 차단
+    setTimeout(() => {
+      alert("모든 응답 데이터가 서버로 최종 완벽 전송되었습니다.");
+    }, 300);
   })
   .catch(err => {
-    alert("최종 데이터 송신 실패 및 전송 네트워크 에러가 발생했습니다.");
-    console.error(err);
-    submitBtn.disabled = false;
-    submitBtn.innerText = "설문 최종 제출하기 (Submit)";
+    // 실제 네트워크 단절 상태이거나 URL 에러일 때만 노출되도록 통제
+    console.error("GAS 데이터 송신 프로세스 예외 덤프:", err);
+    
+    // 이미 완료 페이지로 넘어간 상태라면 실패 알림창을 띄우지 않도록 예외 차단 가드
+    if (!document.getElementById('end_page_container').classList.contains('active')) {
+      alert("최종 데이터 송신 실패 및 전송 네트워크 에러가 발생했습니다.");
+      submitBtn.disabled = false;
+      submitBtn.innerText = "설문 최종 제출하기 (Submit)";
+    }
   });
 }
