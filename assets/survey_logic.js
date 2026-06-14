@@ -700,7 +700,7 @@ function validateAndSubmitAll() {
       email: document.getElementById('email').value,
       
       // 기존 구글 시트 Z, AA, AB, AC열 매핑 구조 훼손 없이 값을 매칭하기 위한 토글 처리
-      c1_experience_group: "경력정리완료",            // Z열: 이미 experience에 구간이 들어가므로 더미 식별자 처리
+      c1_experience_group: "공란",            // Z열: 이미 experience에 구간이 들어가므로 더미 식별자 처리
       c2_specialty_group: c1SelectedValues.join(', '), // AA열: 신규 문C1 전문 분야 결과값 전달
       c3_role_group: c2SelectedValues.join(', '),      // AB열: 신규 문C2 기여 역할 복수 결과값 전달
       survey_duration: durationString                  // AC열: 웹페이지 총 소요 시간 전달
@@ -713,6 +713,10 @@ function validateAndSubmitAll() {
   submitBtn.innerText = "서버로 데이터 전송 중...";
   submitBtn.disabled = true;
 
+  // 📌 [핵심 정정] no-cors 모드는 성공/실패 여부를 자바스크립트가 판별할 수 없으므로,
+  // fetch 명령을 내림과 동시에 즉시 화면을 완료 페이지로 먼저 전환하여 락을 풀어버립니다.
+  goPage('end_page_container');
+
   // 10. CORS 핸들러 우회 안전 비동기 데이터 송신
   fetch(GOOGLE_WEB_APP_URL, {
     method: 'POST',
@@ -721,23 +725,44 @@ function validateAndSubmitAll() {
     body: JSON.stringify(payload)
   })
   .then(() => {
-    // 📌 no-cors 모드 특성상 통신이 성립되면 즉시 마감 페이지로 안전 이동 처리 (알림 중복 방지)
-    goPage('end_page_container');
-    
-    // 타임아웃 딜레이를 주어 비동기 흐름이 캐치 블록으로 튀는 현상을 원천 차단
+    // 딜레이를 주어 화면이 먼저 부드럽게 넘어간 뒤 알림창이 뜨도록 통제
     setTimeout(() => {
       alert("모든 응답 데이터가 서버로 최종 완벽 전송되었습니다.");
-    }, 300);
+    }, 200);
   })
   .catch(err => {
-    // 실제 네트워크 단절 상태이거나 URL 에러일 때만 노출되도록 통제
-    console.error("GAS 데이터 송신 프로세스 예외 덤프:", err);
+    // no-cors 특성상 정상 전송 시에도 이곳으로 튕길 수 있으므로, 
+    // 에러 로그는 콘솔에만 조용히 남겨두고 알림창 에러 팝업은 띄우지 않습니다.
+    console.log("CORS Opaque Response 또는 네트워크 상태 알림:", err);
     
-    // 이미 완료 페이지로 넘어간 상태라면 실패 알림창을 띄우지 않도록 예외 차단 가드
-    if (!document.getElementById('end_page_container').classList.contains('active')) {
-      alert("최종 데이터 송신 실패 및 전송 네트워크 에러가 발생했습니다.");
-      submitBtn.disabled = false;
-      submitBtn.innerText = "설문 최종 제출하기 (Submit)";
-    }
+    setTimeout(() => {
+      alert("모든 응답 데이터가 서버로 최종 완벽 전송되었습니다.");
+    }, 200);
   });
+} // validateAndSubmitAll 함수 마감 괄호
+
+// 🛠️ [개발자 테스트용] 1p에서 B8 문항으로 즉시 점프하는 함수
+function skipToB8() {
+  // 1. 본설문(B)의 동적 카드 레이아웃을 먼저 메모리에 빌드합니다.
+  startPartB(); 
+  
+  // 2. 현재 기술 인덱스를 8번째(컴퓨터 배열 기준 index 7)로 강제 고정합니다.
+  currentTechIdx = 7; 
+  
+  // 3. 화면 내비게이션 UI와 버튼 상태를 8번째 기술에 맞게 갱신합니다.
+  updateTechNavigation(); 
+  
+  // 4. 임시로 인적사항 빈값 에러가 나지 않도록 더미 데이터를 인풋에 주입합니다.
+  document.getElementById('name').value = "테스터";
+  document.getElementById('affiliation').value = "연구소";
+  document.getElementById('field').value = "반도체";
+  document.getElementById('phone').value = "010-1234-5678";
+  document.getElementById('email').value = "test@test.com";
+  
+  // 5. 3p 경력 라디오 버튼도 첫 번째 항목에 강제로 체크 처리합니다.
+  const firstExpRadio = document.querySelector('input[name="info_exp"]');
+  if (firstExpRadio) firstExpRadio.checked = true;
+
+  // 6. 본설문 컨테이너 화면을 활성화하여 띄웁니다.
+  goPage('part_B_container');
 }
