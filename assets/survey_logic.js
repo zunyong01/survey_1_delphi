@@ -605,6 +605,8 @@ function backToB8() {
   goPage('part_B_container');
 }
 
+
+
 // C 섹션 마감 데이터 밸리데이션 및 최종 구글 웹앱 DB 전송 파이프라인 (문항 간소화 동기화 버전)
 function validateAndSubmitAll() {
   // 1. 신규 문C1 (전문 분야) 체크박스 검증
@@ -700,7 +702,7 @@ function validateAndSubmitAll() {
       email: document.getElementById('email').value,
       
       // 기존 구글 시트 Z, AA, AB, AC열 매핑 구조 훼손 없이 값을 매칭하기 위한 토글 처리
-      c1_experience_group: "공란",            // Z열: 이미 experience에 구간이 들어가므로 더미 식별자 처리
+      c1_experience_group: "경력정리완료",            // Z열: 이미 experience에 구간이 들어가므로 더미 식별자 처리
       c2_specialty_group: c1SelectedValues.join(', '), // AA열: 신규 문C1 전문 분야 결과값 전달
       c3_role_group: c2SelectedValues.join(', '),      // AB열: 신규 문C2 기여 역할 복수 결과값 전달
       survey_duration: durationString                  // AC열: 웹페이지 총 소요 시간 전달
@@ -708,98 +710,24 @@ function validateAndSubmitAll() {
     responses: responses
   };
 
-// 9. 로딩 상태 UI 전환 및 중복 클릭 가드 통제
   const submitBtn = document.querySelector('#part_C_container .btn-next');
   submitBtn.innerText = "서버로 데이터 전송 중...";
   submitBtn.disabled = true;
 
-  // 📌 [핵심 정정] no-cors 모드는 성공/실패 여부를 자바스크립트가 판별할 수 없으므로,
-  // fetch 명령을 내림과 동시에 즉시 화면을 완료 페이지로 먼저 전환하여 락을 풀어버립니다.
-  goPage('end_page_container');
-
-  // 10. CORS 핸들러 우회 안전 비동기 데이터 송신
   fetch(GOOGLE_WEB_APP_URL, {
     method: 'POST',
-    mode: 'no-cors', // 구글 웹앱 보안 정책 준수 대응
+    mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
   .then(() => {
-    // 딜레이를 주어 화면이 먼저 부드럽게 넘어간 뒤 알림창이 뜨도록 통제
-    setTimeout(() => {
-      alert("모든 응답 데이터가 서버로 최종 완벽 전송되었습니다.");
-    }, 200);
+    alert("인적사항, 8대 핵심 기술 전망 및 추가 기본 문항 데이터가 서버로 최종 완벽 전송되었습니다.");
+    goPage('end_page_container');
   })
   .catch(err => {
-    // no-cors 특성상 정상 전송 시에도 이곳으로 튕길 수 있으므로, 
-    // 에러 로그는 콘솔에만 조용히 남겨두고 알림창 에러 팝업은 띄우지 않습니다.
-    console.log("CORS Opaque Response 또는 네트워크 상태 알림:", err);
-    
-    setTimeout(() => {
-      alert("모든 응답 데이터가 서버로 최종 완벽 전송되었습니다.");
-    }, 200);
+    alert("최종 데이터 송신 실패 및 전송 네트워크 에러가 발생했습니다.");
+    console.error(err);
+    submitBtn.disabled = false;
+    submitBtn.innerText = "설문 최종 제출하기 (Submit)";
   });
-} // validateAndSubmitAll 함수 마감 괄호
-
-// 🛠️ [개발자 마스터 임시 가이드] 1p에서 B8 문항으로 즉시 점프하며 전 문항 자동 완성하는 가드 엔진
-function skipToB8() {
-  // 1. 3p 인적사항용 DOM 더미 데이터 자동 주입 완착
-  const affiliationEl = document.getElementById('affiliation');
-  const nameEl = document.getElementById('name');
-  const fieldEl = document.getElementById('field');
-  const phoneEl = document.getElementById('phone');
-  const emailEl = document.getElementById('email');
-
-  if (affiliationEl) affiliationEl.value = "경희대학교 T&DI 랩";
-  if (nameEl) nameEl.value = "이준용 학생연구원";
-  if (fieldEl) fieldEl.value = "반도체";
-  if (phoneEl) phoneEl.value = "010-1234-5678";
-  if (emailEl) emailEl.value = "gunnercoyg@khu.ac.kr";
-  
-  // 2. 3p 경력 구간 라디오 버튼 그룹 첫 번째 항목 강제 체크 가드
-  const expRadios = document.getElementsByName('info_exp');
-  if (expRadios && expRadios.length > 0) {
-    expRadios[0].checked = true;
-  }
-
-  // 3. 본설문(B)의 동적 카드 레이아웃 스페이스 전체 빌드 (1~8번 카드 동시 생성)
-  startPartB(); 
-
-  // 4. 📌 [CORS 락 파쇄 가드] 1번부터 8번(index 0~7)까지의 모든 카드를 순회하며 빈값 에러 방지용 더미 데이터 일괄 기입
-  for (let idx = 0; index < techList.length; idx++) {
-    const card = document.getElementById(`techCard_${idx}`);
-    if (card) {
-      // 중립 전망치 자동 세팅 (대소관계 가드 무사통과 폼)
-      card.querySelector('.q1-val').value = 2030;
-      card.querySelector('.q2-val').value = 2035;
-      card.querySelector('.q3-val').value = 30;
-      card.querySelector('.q4-val').value = 30;
-      card.querySelector('.q5-val').value = 30;
-
-      // 시나리오별 3대 전망치 자동 세팅
-      card.querySelector('.q6-val').value = 40;
-      card.querySelector('.q7-val').value = 20;
-      card.querySelector('.q8-val').value = 40;
-      card.querySelector('.q9-val').value = 20;
-      card.querySelector('.q10-val').value = 40;
-      card.querySelector('.q11-val').value = 20;
-
-      // 10글자 제한 인풋 락 우회 가드 텍스트 일제 바인딩
-      card.querySelector('.r-q1-q2').value = "디버깅 시나리오 동동 연동 자동화 검증 문장입니다.";
-      card.querySelector('.r-q3-q4').value = "디버깅 시나리오 동동 연동 자동화 검증 문장입니다.";
-      card.querySelector('.r-q5').value = "디버깅 시나리오 동동 연동 자동화 검증 문장입니다.";
-      card.querySelector('.r-q6-q7').value = "디버깅 시나리오 동동 연동 자동화 검증 문장입니다.";
-      card.querySelector('.r-q8-q9').value = "디버깅 시나리오 동동 연동 자동화 검증 문장입니다.";
-      card.querySelector('.r-q10-q11').value = "디버깅 시나리오 동동 연동 자동화 검증 문장입니다.";
-    }
-  }
-  
-  // 5. 현재 활성 기술 인덱스를 최종 마감 직전인 8번째(배열 인덱스 기준 7)로 강제 이관 고정합니다.
-  currentTechIdx = 7; 
-  
-  // 6. 내비게이션 UI 리렌더링 및 프로그레스 바 상태 동기화
-  updateTechNavigation(); 
-
-  // 7. 레이아웃 스위치를 본설문 영역으로 즉시 강제 전송합니다.
-  goPage('part_B_container');
 }
