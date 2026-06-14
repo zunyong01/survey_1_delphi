@@ -741,36 +741,65 @@ function validateAndSubmitAll() {
   });
 } // validateAndSubmitAll 함수 마감 괄호
 
-// 🛠️ [개발자 테스트용] 1p에서 B8 문항으로 즉시 점프하는 함수 (예외 가드 보완 버전)
+// 🛠️ [개발자 마스터 임시 가이드] 1p에서 B8 문항으로 즉시 점프하며 전 문항 자동 완성하는 가드 엔진
 function skipToB8() {
-  // 1. 임시로 인적사항 빈값 에러 및 필수(*) 입력 가드를 무력화하기 위해 DOM에 더미 데이터 주입
+  // 1. 3p 인적사항용 DOM 더미 데이터 자동 주입 완착
   const affiliationEl = document.getElementById('affiliation');
   const nameEl = document.getElementById('name');
   const fieldEl = document.getElementById('field');
   const phoneEl = document.getElementById('phone');
   const emailEl = document.getElementById('email');
 
-  if (affiliationEl) affiliationEl.value = "테스트 연구소";
-  if (nameEl) nameEl.value = "테스터";
+  if (affiliationEl) affiliationEl.value = "경희대학교 T&DI 랩";
+  if (nameEl) nameEl.value = "이준용 학생연구원";
   if (fieldEl) fieldEl.value = "반도체";
   if (phoneEl) phoneEl.value = "010-1234-5678";
-  if (emailEl) emailEl.value = "test@domain.com";
+  if (emailEl) emailEl.value = "gunnercoyg@khu.ac.kr";
   
-  // 2. 3p 경력 구간 라디오 버튼 그룹 강제 체크 세팅 (validateAndSubmitAll() 우회 바인딩 가드)
+  // 2. 3p 경력 구간 라디오 버튼 그룹 첫 번째 항목 강제 체크 가드
   const expRadios = document.getElementsByName('info_exp');
   if (expRadios && expRadios.length > 0) {
-    expRadios[0].checked = true; // 첫 번째 '5년 이하'에 강제 체크
+    expRadios[0].checked = true;
   }
 
-  // 3. 본설문(B)의 동적 카드 레이아웃 스페이스를 메모리에 빌드합니다.
+  // 3. 본설문(B)의 동적 카드 레이아웃 스페이스 전체 빌드 (1~8번 카드 동시 생성)
   startPartB(); 
+
+  // 4. 📌 [CORS 락 파쇄 가드] 1번부터 8번(index 0~7)까지의 모든 카드를 순회하며 빈값 에러 방지용 더미 데이터 일괄 기입
+  for (let idx = 0; index < techList.length; idx++) {
+    const card = document.getElementById(`techCard_${idx}`);
+    if (card) {
+      // 중립 전망치 자동 세팅 (대소관계 가드 무사통과 폼)
+      card.querySelector('.q1-val').value = 2030;
+      card.querySelector('.q2-val').value = 2035;
+      card.querySelector('.q3-val').value = 30;
+      card.querySelector('.q4-val').value = 30;
+      card.querySelector('.q5-val').value = 30;
+
+      // 시나리오별 3대 전망치 자동 세팅
+      card.querySelector('.q6-val').value = 40;
+      card.querySelector('.q7-val').value = 20;
+      card.querySelector('.q8-val').value = 40;
+      card.querySelector('.q9-val').value = 20;
+      card.querySelector('.q10-val').value = 40;
+      card.querySelector('.q11-val').value = 20;
+
+      // 10글자 제한 인풋 락 우회 가드 텍스트 일제 바인딩
+      card.querySelector('.r-q1-q2').value = "디버깅 시나리오 동동 연동 자동화 검증 문장입니다.";
+      card.querySelector('.r-q3-q4').value = "디버깅 시나리오 동동 연동 자동화 검증 문장입니다.";
+      card.querySelector('.r-q5').value = "디버깅 시나리오 동동 연동 자동화 검증 문장입니다.";
+      card.querySelector('.r-q6-q7').value = "디버깅 시나리오 동동 연동 자동화 검증 문장입니다.";
+      card.querySelector('.r-q8-q9').value = "디버깅 시나리오 동동 연동 자동화 검증 문장입니다.";
+      card.querySelector('.r-q10-q11').value = "디버깅 시나리오 동동 연동 자동화 검증 문장입니다.";
+    }
+  }
   
-  // 4. 현재 기술 인덱스를 8번째(배열 인덱스 기준 7)로 강제 스위칭 고정합니다.
+  // 5. 현재 활성 기술 인덱스를 최종 마감 직전인 8번째(배열 인덱스 기준 7)로 강제 이관 고정합니다.
   currentTechIdx = 7; 
   
-  // 5. 화면 내비게이션 진척도 바 및 다음 기술 버튼 텍스트 상태를 8번째에 맞게 실시간 동기화합니다.
+  // 6. 내비게이션 UI 리렌더링 및 프로그레스 바 상태 동기화
   updateTechNavigation(); 
 
-  // 6. 지연시간 없이 레이아웃을 본설문 컨테이너로 직접 강제 강제 전송 스위칭합니다.
+  // 7. 레이아웃 스위치를 본설문 영역으로 즉시 강제 전송합니다.
   goPage('part_B_container');
 }
