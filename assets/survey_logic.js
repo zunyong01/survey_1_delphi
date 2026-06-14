@@ -741,28 +741,36 @@ function validateAndSubmitAll() {
   });
 } // validateAndSubmitAll 함수 마감 괄호
 
-// 🛠️ [개발자 테스트용] 1p에서 B8 문항으로 즉시 점프하는 함수
+// 🛠️ [개발자 테스트용] 1p에서 B8 문항으로 즉시 점프하는 함수 (예외 가드 보완 버전)
 function skipToB8() {
-  // 1. 본설문(B)의 동적 카드 레이아웃을 먼저 메모리에 빌드합니다.
+  // 1. 임시로 인적사항 빈값 에러 및 필수(*) 입력 가드를 무력화하기 위해 DOM에 더미 데이터 주입
+  const affiliationEl = document.getElementById('affiliation');
+  const nameEl = document.getElementById('name');
+  const fieldEl = document.getElementById('field');
+  const phoneEl = document.getElementById('phone');
+  const emailEl = document.getElementById('email');
+
+  if (affiliationEl) affiliationEl.value = "테스트 연구소";
+  if (nameEl) nameEl.value = "테스터";
+  if (fieldEl) fieldEl.value = "반도체";
+  if (phoneEl) phoneEl.value = "010-1234-5678";
+  if (emailEl) emailEl.value = "test@domain.com";
+  
+  // 2. 3p 경력 구간 라디오 버튼 그룹 강제 체크 세팅 (validateAndSubmitAll() 우회 바인딩 가드)
+  const expRadios = document.getElementsByName('info_exp');
+  if (expRadios && expRadios.length > 0) {
+    expRadios[0].checked = true; // 첫 번째 '5년 이하'에 강제 체크
+  }
+
+  // 3. 본설문(B)의 동적 카드 레이아웃 스페이스를 메모리에 빌드합니다.
   startPartB(); 
   
-  // 2. 현재 기술 인덱스를 8번째(컴퓨터 배열 기준 index 7)로 강제 고정합니다.
+  // 4. 현재 기술 인덱스를 8번째(배열 인덱스 기준 7)로 강제 스위칭 고정합니다.
   currentTechIdx = 7; 
   
-  // 3. 화면 내비게이션 UI와 버튼 상태를 8번째 기술에 맞게 갱신합니다.
+  // 5. 화면 내비게이션 진척도 바 및 다음 기술 버튼 텍스트 상태를 8번째에 맞게 실시간 동기화합니다.
   updateTechNavigation(); 
-  
-  // 4. 임시로 인적사항 빈값 에러가 나지 않도록 더미 데이터를 인풋에 주입합니다.
-  document.getElementById('name').value = "테스터";
-  document.getElementById('affiliation').value = "연구소";
-  document.getElementById('field').value = "반도체";
-  document.getElementById('phone').value = "010-1234-5678";
-  document.getElementById('email').value = "test@test.com";
-  
-  // 5. 3p 경력 라디오 버튼도 첫 번째 항목에 강제로 체크 처리합니다.
-  const firstExpRadio = document.querySelector('input[name="info_exp"]');
-  if (firstExpRadio) firstExpRadio.checked = true;
 
-  // 6. 본설문 컨테이너 화면을 활성화하여 띄웁니다.
+  // 6. 지연시간 없이 레이아웃을 본설문 컨테이너로 직접 강제 강제 전송 스위칭합니다.
   goPage('part_B_container');
 }
