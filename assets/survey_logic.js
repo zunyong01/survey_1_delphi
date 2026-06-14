@@ -721,7 +721,7 @@ function validateAndSubmitAll() {
     body: JSON.stringify(payload)
   })
   .then(() => {
-    alert("인적사항, 8대 핵심 기술 전망 및 추가 기본 문항 데이터가 서버로 최종 완벽 전송되었습니다.");
+    alert("응답하여 주신 모든 데이터가 전송이 완료되었습니다.");
     goPage('end_page_container');
   })
   .catch(err => {
