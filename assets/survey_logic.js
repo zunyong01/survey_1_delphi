@@ -250,19 +250,20 @@ function startPartB() {
             <div class="error-text err-range-q4" style="color: #dc3545; font-size: 12.5px; font-weight: bold; margin-top: 4px; display: none;">⚠️ 입력 범위를 벗어났습니다. 0에서 100 사이의 숫자만 입력 가능합니다.</div>
           </div>
 
-          <div style="margin-bottom: 5px;">
+        <div style="margin-bottom: 25px;">
             <label style="font-weight: bold; display: block; margin-bottom: 8px; font-size: 15.5px; color: #003366;">
-              ⑤ <span class="pipe-year-q1" style="color: #0056b3; font-weight: 800; text-decoration: underline;">①번 입력연도</span>년 대비, <span class="pipe-year-q2" style="color: #0056b3; font-weight: 800; text-decoration: underline;">②번 입력연도</span>년 생산 1단위당 에너지 소비 감소율 :
+              ⑤ <span class="pipe-year-q1" style="color: #0056b3; font-weight: 800; text-decoration: underline;">①번 입력연도</span>년(최초 상용화) → <span class="pipe-year-q2" style="color: #0056b3; font-weight: 800; text-decoration: underline;">②번 입력연도</span>년(50% 상용화) 상황 가정 시, 생산 1단위당 에너지 소비 감소율 :
             </label>
             <div style="display: flex; align-items: center; gap: 5px; max-width: 300px;">
               <input type="number" class="q5-val" min="0" max="100" placeholder="0 ~ 100" style="flex: 1; padding: 11px; font-size: 14.5px;" required>
               <span style="font-weight: bold; font-size: 16px;">%</span>
             </div>
             <span style="font-size: 14.5px; color: #495057; display: block; margin-top: 6px; line-height: 1.6; background: #fff; padding: 8px 12px; border-radius: 4px; border: 1px dashed #b8daff;">
-              - 최초 상용화 초기 단위 에너지 소비량을 <span style="font-weight: bold;">기준값(100%)</span>으로 할 때, 기술 발전으로 에너지 효율 개선이 극대화 되는 시점(② 응답 연도)의 기준값 대비 <span style="font-weight: bold; color: #0056b3;">단위 에너지 소비 감소율(%)</span><br>※ 작성 예시: 기준값 대비 단위 에너지 소비 25% 감소가 한계라고 판단 시 25%로 기재
+              - <span class="pipe-year-q1" style="font-weight: bold; color: #0056b3;">①번 연도</span>의 최초 상용화 초기 단위 에너지 소비량을 <span style="font-weight: bold;">기준값(100%)</span>으로 가정합니다.<br>
+              - 기술 발전 및 공정 안정화로 에너지 효율 개선이 극대화되는 시점인 <span class="pipe-year-q2" style="font-weight: bold; color: #0056b3;">②번 연도</span>에 도달했을 때, 초기 기준값 대비 <span style="font-weight: bold; color: #0056b3;">단위 에너지 소비가 총 몇 % 감소</span>할 것인지 입력해 주십시오.<br>
+              ※ 작성 예시: 최초 상용화 대비 50% 상용화 시점에 에너지 소비를 25% 줄이는 것이 한계라고 판단 시 25%로 기재
             </span>
             <div class="error-text err-range-q5" style="color: #dc3545; font-size: 12.5px; font-weight: bold; margin-top: 4px; display: none;">⚠️ 입력 범위를 벗어났습니다. 0에서 100 사이의 숫자만 입력 가능합니다.</div>
-          </div>
         </div>
 
         <div style="margin-bottom: 35px;">
@@ -394,7 +395,7 @@ function startPartB() {
                 <div class="error-text err-range-xi" style="color: #dc3545; font-size: 12.5px; font-weight: bold; margin-top: 4px; display: none;">⚠️ 0에서 100 사이의 숫자만 입력 가능합니다.</div>
               </div>
             </div>
-            <span style="font-size: 12.5px; color: #6c757d; display: block; margin-top: 8px;">- 상용화 초기 단위 에너지 소비량을 기준값(100%)으로 할 때, 기술 발전으로 에너지 효율 개선이 극대화 되는 시점의 기준값 대비 단위 에너지 소비 감소율(%)</span>
+            <span style="font-size: 12.5px; color: #6c757d; display: block; margin-top: 8px;">- 상용화 초기 단위 에너지 소비량을 기준값(100%)으로 할 때, 기술 발전으로 에너지 효율 개선이 극대화 되는 시점의  에너지 소비 감소율(%)</span>
           </div>
         </div>
 
@@ -427,7 +428,6 @@ function startPartB() {
   goPage('part_B_container');
 }
 
-
 function bindRealtimeValidation(idx) {
   const card = document.getElementById(`techCard_${idx}`);
   const q1 = card.querySelector('.q1-val');
@@ -446,12 +446,12 @@ function bindRealtimeValidation(idx) {
   const pipeQ4 = card.querySelector('.pipe-q4');
   const pipeQ5 = card.querySelector('.pipe-q5');
 
-  // 📌 [정정 및 결합] 사용자가 ①, ②번 문항에 연도를 입력할 때 하단 문항 레이블에 실시간 데이터 파이핑 핸들러
+  // 📌 [구조 정교화] 사용자가 ①, ②번 문항에 연도를 입력할 때 질문 헤더 및 하단 설명문 스팬까지 실시간 데이터 파이핑 핸들러
   function pipeInputYears() {
     const q1YearText = q1.value.trim() ? q1.value.trim() : "①번 입력연도";
     const q2YearText = q2.value.trim() ? q2.value.trim() : "②번 입력연도";
     
-    // ③, ④, ⑤ 문항의 실시간 안내 연도 스트링 일제히 매핑 동기화
+    // ③, ④, ⑤ 문항 질문 레이블 및 ⑤번 설명문 내부의 모든 연도 가이드 스트링 일제히 매핑 동기화
     card.querySelectorAll('.pipe-year-q1').forEach(el => el.innerText = q1YearText);
     card.querySelectorAll('.pipe-year-q2').forEach(el => el.innerText = q2YearText);
     
@@ -520,6 +520,7 @@ function bindRealtimeValidation(idx) {
     card.querySelector('.err-xi').style.display = (q5.value && parseInt(q11.value) > parseInt(q5.value)) ? 'block' : 'none';
   });
 }
+
 
 function updateTechNavigation() {
   document.querySelectorAll('.tech-survey-card').forEach((card, i) => {
