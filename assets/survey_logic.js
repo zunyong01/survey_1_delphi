@@ -139,6 +139,30 @@ function validateAndGoToA() {
   goPage('A_page1');
 }
 
+
+// ====================================================
+// [신규 추가] 1.5p 개인정보 제공 동의 위반 가드 및 페이지 흐름 통제 함수
+// ====================================================
+function validatePrivacyConsent() {
+  const consentChecked = document.querySelector('input[name="privacy_agree"]:checked');
+  
+  // 1. 선택 자체를 안 한 탈락 가드
+  if (!consentChecked) {
+    alert("개인정보 수집 및 이용 동의 여부를 선택해 주십시오.");
+    return;
+  }
+  
+  // 2. '동의하지 않습니다'를 누른 거부 가드
+  if (consentChecked.value === "동의안함") {
+    alert("귀하께서는 동의를 거부할 권리가 있으나, 거부하시는 경우 법적 예산 증빙 처리가 불가능하여 본 조사에 응답 및 참여하실 수 없습니다.");
+    return;
+  }
+  
+  // 3. 정상 통과 시 다음 안내 가이드 설명문 페이지(page_2)로 스위칭 전송
+  goPage('page_2');
+}
+
+
 // [B] 본설문 영역 카드 동적 빌더 (실시간 입력연도 파이핑 및 선행연구 텍스트 고도화 반영 버전)
 function startPartB() {
   const container = document.getElementById('dynamicSurveyContainer');
