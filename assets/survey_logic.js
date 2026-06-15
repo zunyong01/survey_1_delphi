@@ -259,8 +259,8 @@ function startPartB() {
               <span style="font-weight: bold; font-size: 16px;">%</span>
             </div>
             <span style="font-size: 14.5px; color: #495057; display: block; margin-top: 6px; line-height: 1.6; background: #fff; padding: 8px 12px; border-radius: 4px; border: 1px dashed #b8daff;">
-              - <span class="pipe-year-q1" style="font-weight: bold; color: #0056b3;">①번 연도</span>의 최초 상용화 초기 단위 에너지 소비량을 <span style="font-weight: bold;">기준값(100%)</span>으로 가정합니다.<br>
-              - 기술 발전 및 공정 안정화로 에너지 효율 개선이 극대화되는 시점인 <span class="pipe-year-q2" style="font-weight: bold; color: #0056b3;">②번 연도</span>에 도달했을 때, 초기 기준값 대비 <span style="font-weight: bold; color: #0056b3;">단위 에너지 소비가 총 몇 % 감소</span>할 것인지 입력해 주십시오.<br>
+              - <span class="pipe-year-q1" style="font-weight: bold; color: #0056b3;">①번 연도</span>년의 최초 상용화 초기 단위 에너지 소비량을 <span style="font-weight: bold;">기준값(100%)</span>으로 가정합니다.<br>
+              - 기술 발전 및 공정 안정화로 에너지 효율 개선이 극대화되는 시점인 <span class="pipe-year-q2" style="font-weight: bold; color: #0056b3;">②번 연도</span>년에 도달했을 때, 초기 기준값 대비 <span style="font-weight: bold; color: #0056b3;">단위 에너지 소비가 총 몇 % 감소</span>할 것인지 입력해 주십시오.<br>
               ※ 작성 예시: 최초 상용화 대비 50% 상용화 시점에 에너지 소비를 25% 줄이는 것이 한계라고 판단 시 25%로 기재
             </span>
             <div class="error-text err-range-q5" style="color: #dc3545; font-size: 12.5px; font-weight: bold; margin-top: 4px; display: none;">⚠️ 입력 범위를 벗어났습니다. 0에서 100 사이의 숫자만 입력 가능합니다.</div>
