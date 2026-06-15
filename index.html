@@ -43,8 +43,60 @@
         이준용 학생연구원 (gunnercoyg@khu.ac.kr)
       </div>
 
+    <div class="btn-container">
+        <button type="button" class="btn-next" onclick="goPage('page_1_5')">다음 페이지 (2p)</button>
+    </div>    </div>
+    
+    <div class="survey-step" id="page_1_5">
+      <h1>개인정보 수집 및 이용 동의서</h1>
+      
+      <p style="text-align: justify; line-height: 1.7; margin-bottom: 20px;">
+        먼저, 아래 응답자 개인정보 동의 질문에 응답해 주십시오. 
+        <span style="display: block; margin-top: 5px; color: #666; font-size: 14px;">
+          (추후 자문비 제공 시 개인정보제공동의서 처리가 필요합니다. 본 정보는 자문비 지급 용도 외에는 절대 외부 유출되지 않음을 강조 드립니다.)
+        </span>
+      </p>
+
+      <div style="background-color: #ffffff; border: 1px solid #ced4da; padding: 20px; border-radius: 6px; margin-bottom: 25px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
+        <strong style="font-size: 15.5px; color: #333; display: block; margin-bottom: 12px;">
+          [개인정보 수집·이용 동의] 응답 확인 등 검증에 필요한 개인정보 수집 동의
+        </strong>
+        
+        <ul style="list-style: none; padding-left: 5px; margin: 0; font-size: 14.5px; color: #495057; line-height: 1.8;">
+          <li style="margin-bottom: 6px;">① 개인정보 수집·이용 목적 : <span style="font-weight: bold; color: #212529;">응답자 답례(현금) 제공</span></li>
+          <li style="margin-bottom: 6px;">② 수집 개인정보 항목 : <span style="font-weight: bold; color: #212529;">이름, 휴대폰 번호, 주민등록번호(세무 당국 신고용) 및 계좌 정보</span></li>
+          <li style="margin-bottom: 0;">③ 개인정보 보유기간 : <span style="font-weight: bold; color: #212529;">응답자 답례 제공 후, 1개월 이내</span></li>
+        </ul>
+      </div>
+
+      <div style="margin-bottom: 25px;">
+        <label style="font-weight: bold; display: block; margin-bottom: 12px; font-size: 15.5px; color: #003366;">
+          위 개인정보 수집에 동의하십니까? *
+          <span style="display: block; font-weight: normal; font-size: 13.5px; color: #6c757d; margin-top: 4px;">
+            귀하께서는 동의를 거부할 권리가 있으며, 거부하는 경우 조사에 응답할 수 없습니다.
+          </span>
+        </label>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px; padding-left: 5px;">
+          <label style="font-weight: normal; margin: 0; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px;">
+            <input type="radio" name="privacy_agree" value="동의함" style="width: 17px; height: 17px; cursor: pointer;"> 동의함
+          </label>
+          <label style="font-weight: normal; margin: 0; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px;">
+            <input type="radio" name="privacy_agree" value="동의안함" style="width: 17px; height: 17px; cursor: pointer;"> 동의 안함
+          </label>
+        </div>
+      </div>
+
+      <div style="background-color: #f8f9fa; border-left: 4px solid #6c757d; padding: 15px 18px; font-size: 14.5px; color: #495057; line-height: 1.6; margin-bottom: 30px; border-radius: 0 4px 4px 0;">
+        💡 귀하의 구체적인 개인정보(주민등록번호, 계좌정보)는 질문 맨 뒤에서 안전하게 질문합니다. 답례 제공을 위한 필수 확인 질문으로 반드시 응답 부탁드립니다. 
+        <span style="display: block; margin-top: 4px; font-weight: bold; color: #0056b3;">
+          (※ 귀하의 개인정보는 비밀이 철저히 보호됨을 다시 한 번 말씀드립니다.)
+        </span>
+      </div>
+
       <div class="btn-container">
-        <button type="button" class="btn-next" onclick="goPage('page_2')">다음 페이지 (2p)</button>
+        <button type="button" class="btn-prev" onclick="goPage('page_1')">이전</button>
+        <button type="button" class="btn-next" onclick="validatePrivacyConsent()">동의 확인 및 다음 단계</button>
       </div>
     </div>
 
@@ -82,7 +134,7 @@
           <div class="alert-box">
             ㆍ <strong>[A] 부분 (설명자료):</strong> 총 5페이지 (반도체 및 디스플레이 산업의 탄소중립 현황 및 혁신감축기술 목록에 대한 설명, 시나리오 소개)<br>
             ㆍ <strong>[B] 부분 (본설문 응답):</strong> 총 8페이지 (각 혁신감축기술 별 전문가 응답자의 의견 응답 시트)<br>
-            ㆍ <strong>[C] 부분 (개인 인적 추가 사항 응답):</strong> 총 1페이지 (전문 분야 및 산업 내 역할)
+            ㆍ <strong>[C] 부분 (개인 인적 추가 사항 응답):</strong> 총 1페이지 (전문 분야 및 산업 내 역할, 답례를 위한 개인정보)
           </div>
           
           <p>전문가님께서 제시해 주시는 한 줄의 의견과 정량적 수치는 대한민국 반도체 및 디스플레이 산업의 환경·에너지 정책과 산업 흐름을 결정짓는 핵심적인 기초 자산이 됩니다.</p>
