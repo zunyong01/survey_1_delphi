@@ -21,7 +21,7 @@ const techList = [
     id: 3, 
     name: "ALD 증착 및 저온 플라즈마 이온주입 공정", 
     type: "공정 개선 기술",
-    desc: "원자층 증착(ALD)을 통한 공정 미세화를 달성함과 동시에, 이온주입 단계를 고온 열처리 대신 저온 플라즈마 방식으로 유도하여 하이엔드 소자 공정의 배출량과 열에너지 투입을 원천 제어합니다."
+    desc: "원자층 단위로 증착하여 공정 미세화를 달성함과 동시에, 이온주입 단계를 고온 열처리 대신 저온 플라즈마 방식으로 유도하여 하이엔드 소자 공정의 배출량과 열에너지 투입을 원천 제어합니다."
   },
   { 
     id: 4, 
@@ -139,7 +139,7 @@ function validateAndGoToA() {
   goPage('A_page1');
 }
 
-// [B] 본설문 영역 카드 동적 빌더 및 실시간 인터락 바인딩 (기술 상세설명 레이아웃 결합 버전)
+// [B] 본설문 영역 카드 동적 빌더 (실시간 입력연도 파이핑 및 선행연구 텍스트 고도화 반영 버전)
 function startPartB() {
   const container = document.getElementById('dynamicSurveyContainer');
   container.innerHTML = ""; 
@@ -161,7 +161,7 @@ function startPartB() {
         </h2>
 
         <div style="background-color: #f0f4f8; border-left: 5px solid #5c85d6; padding: 12px 18px; margin-bottom: 25px; border-radius: 0 6px 6px 0; font-size: 14px; text-align: justify; color: #2b4c7e; line-height: 1.6;">
-          <strong>💡 ${tech.name} 설명 (기술 개요 설명):</strong> ${tech.desc}
+          <strong>💡 ${tech.name} 설명 (기술 설명):</strong> ${tech.desc}
         </div>
 
         <div style="background-color: #f8f9fa; padding: 15px; border: 1px solid #ced4da; border-radius: 6px; margin-bottom: 25px;">
@@ -170,85 +170,73 @@ function startPartB() {
             <div>
               <label style="font-weight: bold; display: block; margin-bottom: 5px;">① 최초 상용화 시점 :</label>
               <div style="display: flex; align-items: center; gap: 5px;">
-                <input type="number" class="q1-val" min="2025" max="2050" placeholder="2025~2050" style="flex: 1;" required>
+                <input type="number" class="q1-val" min="2026" placeholder="2026년 이후 연도 입력" style="flex: 1;" required>
                 <span style="font-weight: bold;">년</span>
               </div>
-              <span class="red" style="font-size: 12px; display: block; margin-top: 4px; line-height: 1.4;">- 기술이 반디산업 분야에 처음 상용화 될 것으로 예상되는 시점(연도) (2025~2050 사이의 숫자로 응답해주세요)</span>
+              <span class="red" style="font-size: 12px; display: block; margin-top: 4px; line-height: 1.4;">- 기술이 반디산업 분야에 처음 상용화 될 것으로 예상되는 시점(연도) (2026년보다 큰 숫자로 응답해주세요)</span>
             </div>
             <div>
               <label style="font-weight: bold; display: block; margin-bottom: 5px;">② 50% 이상 상용화 시점 (기술확산 정점시기) :</label>
               <div style="display: flex; align-items: center; gap: 5px;">
-                <input type="number" class="q2-val" min="2025" max="2050" placeholder="2025~2050" style="flex: 1;" required>
+                <input type="number" class="q2-val" min="2026" placeholder="2026년 이후 연도 입력" style="flex: 1;" required>
                 <span style="font-weight: bold;">년</span>
               </div>
-              <span class="red" style="font-size: 12px; display: block; margin-top: 4px; line-height: 1.4;">- 기술 도입이 확산되어, 반디 산업 내 50% 이상 생산공정에서 기술이 상용화 될 것으로 예상되는 시점(연도) (2025~2050 사이의 숫자로 응답해주세요, 그리고 ② ≥ ① 으로 크기 순서를 유지하여 기입하여 주세요)</span>
+              <span class="red" style="font-size: 12px; display: block; margin-top: 4px; line-height: 1.4;">- 기술 도입이 확산되어, 반디 산업 내 50% 이상 생산공정에서 기술이 상용화 될 것으로 예상되는 시점(연도) (2026년보다 큰 숫자로 응답해주세요, 그리고 ② ≥ ① 으로 크기 순서를 유지하여 기입하여 주세요)</span>
               <div class="error-text err-q2" style="color: #dc3545; font-size: 13px; font-weight: bold; margin-top: 5px; display: none;">⚠️ 오류: 50% 이상 상용화 시점(②)은 최초 상용화 시점(①)보다 크거나 같아야 합니다.</div>
             </div>
           </div>
         </div>
 
-        <div style="background-color: #ffffff; padding: 15px; border: 1px solid #dee2e6; border-radius: 6px; margin-bottom: 25px; font-size: 12.5px;">
-          <span style="font-weight: bold; color: #333; display: block; margin-bottom: 4px;">주요 감축기술 도입에 따른 전망 (McKinsey, 2022)</span>
-          <span style="display: block; margin-bottom: 10px; color: #555; font-size: 12px; line-height: 1.4;">
-            ※ 대량 생산 팹(fab)에서 <span style="text-decoration: underline; font-weight: bold;">향후 10년 이내에 온실가스 배출량을 약 50% 감축하는 목표를 달성하기 위해 A 기술을 도입했을 때의 1톤당 감축/소요하는 비용의 크기</span>(단위: 달러/톤 CO<sub>2</sub>eq)
-          </span>
-          <div style="width: 100%; overflow-x: auto; max-width: 450px; margin: 0 auto;">
-            <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 12.5px;">
-              <thead>
-                <tr style="background-color: #f0f4f8; border-top: 1px solid #aaa; border-bottom: 1px solid #aaa; font-weight: bold;">
-                  <th style="padding: 8px; border: 1px solid #dee2e6; width: 50%;">기술 분류</th>
-                  <th style="padding: 8px; border: 1px solid #dee2e6; width: 50%;">순 비용</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding: 8px; border: 1px solid #dee2e6; font-weight: bold; background-color: #fafafa;">공정 개선</td>
-                  <td style="padding: 8px; border: 1px solid #dee2e6; color: #0056b3; font-weight: bold;">175$ 절감</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px; border: 1px solid #dee2e6; font-weight: bold; background-color: #fafafa;">저 GWP 가스 개발</td>
-                  <td style="padding: 8px; border: 1px solid #dee2e6; color: #dc3545; font-weight: bold;">25~50$ 소요</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #aaa;">
-                  <td style="padding: 8px; border: 1px solid #dee2e6; font-weight: bold; background-color: #fafafa;">후처리 기술</td>
-                  <td style="padding: 8px; border: 1px solid #dee2e6; color: #dc3545; font-weight: bold;">150~175$ 소요</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <span style="font-size: 11px; color: #6c757d; display: block; margin-top: 8px; text-align: center;">*McKinsey(2022), Sustainability in Semiconductor Operations: Toward Net-Zero Production. p7. 기반 저자 가공</span>
+        <div style="background-color: #ffffff; padding: 16px 20px; border: 1px solid #dee2e6; border-radius: 6px; margin-bottom: 25px; font-size: 13.5px; line-height: 1.6; text-align: justify; color: #495057;">
+          <span style="font-weight: bold; color: #004085; display: block; margin-bottom: 6px; font-size: 14px;">💡 비용 및 효율 개선 전망 참고 자료 (학습률 관련 선행연구 요약)</span>
+          선행연구들에 따르면 <span class="bold-underline">제조업 전반의 비용 절감률(학습률)은 약 20%</span>이며 많은 기술들이 <span class="bold-underline">15~25%의 범위에 분포</span>합니다 (Dutton & Thomas, 1984; Nagy et al., 2013). 기술 유형에 따라 R&D 학습률은 다르게 나타나며, 모듈화·표준화 수준이 높고 대량생산이 용이한 기술은 학습률이 높은 반면, 대형 설비 의존도가 높거나 성숙기에 접어들어 비용 개선 여지가 줄어든 기술은 상대적으로 낮은 학습률을 보입니다.
         </div>
 
-        <div style="background-color: #f4f8ff; padding: 15px; border: 1px solid #ced4da; border-radius: 6px; margin-bottom: 25px;">
-          <span style="font-weight: bold; color: #004085; display: block; margin-bottom: 10px;">&lt;주요 감축기술 발전에 따른 비용 및 성능(효율) 개선 전망&gt;</span>
+        <div style="background-color: #f4f8ff; padding: 18px; border: 1px solid #ced4da; border-radius: 6px; margin-bottom: 25px;">
+          <span style="font-weight: bold; color: #004085; display: block; margin-bottom: 12px; font-size: 14.5px;">&lt;주요 감축기술 발전에 따른 비용 및 성능(효율) 개선 전망&gt;</span>
           
-          <div style="margin-bottom: 18px;">
-            <label style="font-weight: bold; display: block; margin-bottom: 5px;">③ 설비 투자 비용(CAPEX) 절감률 :</label>
+          <div style="background-color: #f4f8ff; padding: 20px; border: 1px solid #ced4da; border-radius: 6px; margin-bottom: 25px;">
+          <span style="font-weight: bold; color: #004085; display: block; margin-bottom: 15px; font-size: 15px;">&lt;주요 감축기술 발전에 따른 비용 및 성능(효율) 개선 전망&gt;</span>
+          
+          <div style="margin-bottom: 24px;">
+            <label style="font-weight: bold; display: block; margin-bottom: 8px; font-size: 15.5px; color: #003366;">
+              ③ <span class="pipe-year-q1" style="color: #0056b3; font-weight: 800; text-decoration: underline;">①번 입력연도</span>년 대비, <span class="pipe-year-q2" style="color: #0056b3; font-weight: 800; text-decoration: underline;">②번 입력연도</span>년 설비 투자 비용(CAPEX) 절감률 :
+            </label>
             <div style="display: flex; align-items: center; gap: 5px; max-width: 300px;">
-              <input type="number" class="q3-val" min="0" max="100" placeholder="0 ~ 100" style="flex: 1;" required>
-              <span style="font-weight: bold;">%</span>
+              <input type="number" class="q3-val" min="0" max="100" placeholder="0 ~ 100" style="flex: 1; padding: 11px; font-size: 14.5px;" required>
+              <span style="font-weight: bold; font-size: 16px;">%</span>
             </div>
-            <span style="font-size: 12.5px; color: #495057; display: block; margin-top: 4px; line-height: 1.4;">- 상용화 초기 대비, 향후 기술 발전으로 생산능력이 2배 증가했다고 가정할 때 <span style="text-decoration: underline; font-weight: bold;">CAPEX 단위 비용(원/t)이 평균적으로 감소하는 수준(%)</span></span>
+            <span style="font-size: 14.5px; color: #495057; display: block; margin-top: 6px; line-height: 1.6; background: #fff; padding: 8px 12px; border-radius: 4px; border: 1px dashed #b8daff;">
+              - 기술 최초 상용화 시기 대비, 향후 기술 발전으로 <span class="red">생산능력이 2배 증가</span>(기술확산 정점기)했다고 가정할 때 <span style="font-weight: bold; color: #0056b3;">CAPEX 단위 비용(원/t)이 평균적으로 감소하는 수준(%)</span>
+            </span>
             <div class="error-text err-range-q3" style="color: #dc3545; font-size: 12.5px; font-weight: bold; margin-top: 4px; display: none;">⚠️ 입력 범위를 벗어났습니다. 0에서 100 사이의 숫자만 입력 가능합니다.</div>
           </div>
 
-          <div style="margin-bottom: 18px;">
-            <label style="font-weight: bold; display: block; margin-bottom: 5px;">④ 변동 유지보수 비용(OPEX) 절감률 :</label>
+          <div style="margin-bottom: 24px;">
+            <label style="font-weight: bold; display: block; margin-bottom: 8px; font-size: 15.5px; color: #003366;">
+              ④ <span class="pipe-year-q1" style="color: #0056b3; font-weight: 800; text-decoration: underline;">①번 입력연도</span>년 대비, <span class="pipe-year-q2" style="color: #0056b3; font-weight: 800; text-decoration: underline;">②번 입력연도</span>년 변동 유지보수 비용(OPEX) 절감률 :
+            </label>
             <div style="display: flex; align-items: center; gap: 5px; max-width: 300px;">
-              <input type="number" class="q4-val" min="0" max="100" placeholder="0 ~ 100" style="flex: 1;" required>
-              <span style="font-weight: bold;">%</span>
+              <input type="number" class="q4-val" min="0" max="100" placeholder="0 ~ 100" style="flex: 1; padding: 11px; font-size: 14.5px;" required>
+              <span style="font-weight: bold; font-size: 16px;">%</span>
             </div>
-            <span style="font-size: 12.5px; color: #495057; display: block; margin-top: 4px; line-height: 1.4;">- 상용화 초기 대비, 향후 기술 발전으로 생산능력이 2배 증가했다고 가정할 때 <span style="text-decoration: underline; font-weight: bold;">OPEX 단위 비용(원/t)이 평균적으로 감소하는 수준(%)</span></span>
+            <span style="font-size: 14.5px; color: #495057; display: block; margin-top: 6px; line-height: 1.6; background: #fff; padding: 8px 12px; border-radius: 4px; border: 1px dashed #b8daff;">
+              - 기술 최초 상용화 시기 대비, 향후 기술 발전으로 <span class="red">생산능력이 2배 증가</span>(기술확산 정점기)했다고 가정할 때 <span style="font-weight: bold; color: #0056b3;">OPEX 단위 비용(원/t)이 평균적으로 감소하는 수준(%)</span>
+            </span>
             <div class="error-text err-range-q4" style="color: #dc3545; font-size: 12.5px; font-weight: bold; margin-top: 4px; display: none;">⚠️ 입력 범위를 벗어났습니다. 0에서 100 사이의 숫자만 입력 가능합니다.</div>
           </div>
 
           <div style="margin-bottom: 5px;">
-            <label style="font-weight: bold; display: block; margin-bottom: 5px;">⑤ 생산 1단위당 에너지 소비 감소율 :</label>
+            <label style="font-weight: bold; display: block; margin-bottom: 8px; font-size: 15.5px; color: #003366;">
+              ⑤ <span class="pipe-year-q1" style="color: #0056b3; font-weight: 800; text-decoration: underline;">①번 입력연도</span>년 대비, <span class="pipe-year-q2" style="color: #0056b3; font-weight: 800; text-decoration: underline;">②번 입력연도</span>년 생산 1단위당 에너지 소비 감소율 :
+            </label>
             <div style="display: flex; align-items: center; gap: 5px; max-width: 300px;">
-              <input type="number" class="q5-val" min="0" max="100" placeholder="0 ~ 100" style="flex: 1;" required>
-              <span style="font-weight: bold;">%</span>
+              <input type="number" class="q5-val" min="0" max="100" placeholder="0 ~ 100" style="flex: 1; padding: 11px; font-size: 14.5px;" required>
+              <span style="font-weight: bold; font-size: 16px;">%</span>
             </div>
-            <span style="font-size: 12.5px; color: #495057; display: block; margin-top: 4px; line-height: 1.4;">- 상용화 초기 단위 에너지 소비량을 <span style="text-decoration: underline; font-weight: bold;">기준값(100%)</span>으로 할 때, 기술 발전으로 에너지 효율 개선이 극대화 되는 시점의 기준값 대비 <span style="text-decoration: underline; font-weight: bold;">단위 에너지 소비 감소율(%)</span><br>※ 작성 예시: 기준값 대비 단위 에너지 소비 25% 감소가 한계라고 판단 시 25%로 기재</span>
+            <span style="font-size: 14.5px; color: #495057; display: block; margin-top: 6px; line-height: 1.6; background: #fff; padding: 8px 12px; border-radius: 4px; border: 1px dashed #b8daff;">
+              - 최초 상용화 초기 단위 에너지 소비량을 <span style="font-weight: bold;">기준값(100%)</span>으로 할 때, 기술 발전으로 에너지 효율 개선이 극대화 되는 시점(② 응답 연도)의 기준값 대비 <span style="font-weight: bold; color: #0056b3;">단위 에너지 소비 감소율(%)</span><br>※ 작성 예시: 기준값 대비 단위 에너지 소비 25% 감소가 한계라고 판단 시 25%로 기재
+            </span>
             <div class="error-text err-range-q5" style="color: #dc3545; font-size: 12.5px; font-weight: bold; margin-top: 4px; display: none;">⚠️ 입력 범위를 벗어났습니다. 0에서 100 사이의 숫자만 입력 가능합니다.</div>
           </div>
         </div>
@@ -415,6 +403,7 @@ function startPartB() {
   goPage('part_B_container');
 }
 
+
 function bindRealtimeValidation(idx) {
   const card = document.getElementById(`techCard_${idx}`);
   const q1 = card.querySelector('.q1-val');
@@ -433,11 +422,21 @@ function bindRealtimeValidation(idx) {
   const pipeQ4 = card.querySelector('.pipe-q4');
   const pipeQ5 = card.querySelector('.pipe-q5');
 
-  function checkYears() {
+  // 📌 [정정 및 결합] 사용자가 ①, ②번 문항에 연도를 입력할 때 하단 문항 레이블에 실시간 데이터 파이핑 핸들러
+  function pipeInputYears() {
+    const q1YearText = q1.value.trim() ? q1.value.trim() : "①번 입력연도";
+    const q2YearText = q2.value.trim() ? q2.value.trim() : "②번 입력연도";
+    
+    // ③, ④, ⑤ 문항의 실시간 안내 연도 스트링 일제히 매핑 동기화
+    card.querySelectorAll('.pipe-year-q1').forEach(el => el.innerText = q1YearText);
+    card.querySelectorAll('.pipe-year-q2').forEach(el => el.innerText = q2YearText);
+    
+    // 연도 전망치 간 대소 관계(역전 현상) 에러 메시지 노출 통제
     card.querySelector('.err-q2').style.display = (q1.value && q2.value && parseInt(q2.value) < parseInt(q1.value)) ? 'block' : 'none';
   }
-  q1.addEventListener('input', checkYears);
-  q2.addEventListener('input', checkYears);
+  
+  q1.addEventListener('input', pipeInputYears);
+  q2.addEventListener('input', pipeInputYears);
 
   function checkRange(inputEl, errorEl) {
     if(inputEl.value) {
@@ -556,8 +555,8 @@ function moveTechPage(dir) {
     const q11 = parseInt(currentCard.querySelector('.q11-val').value);
 
     // 📌 [요구사항 2 보완] 최초 상용화 및 50% 상용화 시점의 2025~2050 하드 바운더리 검증 추가
-    if (q1 < 2025 || q1 > 2050 || q2 < 2025 || q2 > 2050) {
-      alert("연도 전망 범위 오류:\n① 최초 상용화 시점과 ② 50% 이상 상용화 시점은 2025년에서 2050년 사이의 연도로 입력하여 주십시오.");
+    if (q1 < 2026 || q2 < 2026) {
+      alert("연도 전망 범위 오류:\n① 최초 상용화 시점과 ② 50% 이상 상용화 시점은 반드시 현재 시점 이후인 2026년 이후의 연도로 입력하여 주십시오.");
       return;
     }
     
