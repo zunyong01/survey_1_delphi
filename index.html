@@ -438,7 +438,7 @@
     </div>
 
 <div class="survey-step" id="part_C_container">
-      <h1 style="background-color: #e9ecef; color: #333; text-align: left; font-size: 22px; padding: 10px 15px; border-radius: 4px; margin-bottom: 25px;">C. 응답자 기본 질문</h1>
+      <h1 style="background-color: #e9ecef; color: #333; text-align: left; font-size: 22px; padding: 10px 15px; border-radius: 4px; margin-bottom: 25px;">C. 응답자 기본 질문 및 자문료 증빙</h1>
       
       <div style="margin-bottom: 25px; border-bottom: 1px dashed #dee2e6; padding-bottom: 20px;">
         <label style="font-size: 16px; margin-bottom: 8px;"><span class="bold-underline">문C1.</span> 귀하의 <span class="bold-underline">전문 분야</span>는 무엇입니까? (복수 응답 허용) *</label>
@@ -454,13 +454,7 @@
         </div>
       </div>
 
-      <div style="margin-bottom: 25px; padding-bottom: 10px;"><반디>
-* 최초 상용화 시점과 50% 이상 상용화 시점 모두 2026년 이후 제약만 걸고 2050년 제약을 걸지 맙시다. (2050년에 50% 이상 상용화 불가능할 수 있음 + 상용화가 애초에 불가능할 수도 있음) 이는 이슈에 따라 큰 문제가 될 수도 있습니다.
-* (3)~(5) 응답 시 설명 글씨 크기도 좀 키워서 시인성을 개선하는게 좋을 듯 합니다...
-* (3)~(5) 응답 시 (1)과 (2)를 레퍼런스 삼아서 설명하는 게 좋을 듯 합니다. 마음 같아서는 해당 값을 질문 문항에서 그냥 제시하는 방식이 가능한 지 궁금 (예: ~년 대비 ~년 CAPEX 절감률 등)
-* 비용 선행연구는 레퍼런스를 그렇게 달지 말고 (오히려 혼란만 생기고 도움이 크게 안되는 듯함), 아래 정도로 하면 어떨지...? (학습률 관련 메타연구 2개)
-[선행연구들에 따르면 제조업 전반의 비용 절감률(학습률)은 약 20%이며 많은 기술들이 15-25% 의 범위에 분포합니다 (Dutton & Thomas, 1984; Nagy et al., 2013).
-기술 유형에 따라 학습률은 다르게 나타나며, 모듈화·표준화 수준이 높고 대량생산이 용이한 기술은 학습률이 높은 반면, 대형 설비 의존도가 높거나 성숙기에 접어들어 비용 개선 여지가 줄어든 기술은 상대적으로 낮은 학습률을 보입니다]춫ㅊㅊㅊㄴㅊㅌㅊㅌㅊ
+      <div style="margin-bottom: 25px; border-bottom: 1px dashed #dee2e6; padding-bottom: 20px;">
         <label style="font-size: 16px; margin-bottom: 8px;"><span class="bold-underline">문C2.</span> 귀하께서는 <span class="bold-underline">어떠한 역할(소속 부문)</span>로써 해당 산업에 기여하고 계십니까? (복수 응답 허용) *</label>
         <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-left: 10px;">
           <label style="font-weight: normal; margin: 0;"><input type="checkbox" name="c2_new_val" value="산업계"> ① 산업계 (제조사, 소부장 기업 등)</label>
@@ -470,6 +464,31 @@
             <label style="font-weight: normal; margin: 0; white-space: nowrap;"><input type="checkbox" name="c2_new_val" value="기타" id="c2_new_etc_chk"> ④ 기타 (</label>
             <input type="text" id="c2_new_etc_txt" placeholder="기타 역할 입력" style="border: none; border-bottom: 1px solid #aaa; padding: 2px 5px; width: 100%; max-width: 300px; border-radius: 0; font-size: 14px;">
             <span style="font-weight: normal;">)</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 25px; padding-bottom: 10px;">
+        <label style="font-size: 16px; margin-bottom: 5px; display: block;"><span class="bold-underline">문C3.</span> 자문비(현금 답례비) 지급을 위한 <span class="bold-underline">세무 신고 원천징수 증빙 및 계좌 정보</span>를 입력해 주십시오. *</label>
+        <span style="display: block; font-size: 13px; color: #6c757d; margin-bottom: 12px; line-height: 1.5; text-align: justify;">
+          ※ 국가 연구개발과제 집행 가이드라인에 따른 세무 신고용(기타소득세 원천징수) 필수 수집 정보이며, 답례 처리 완료 즉시(1개월 이내) 규정에 의거하여 안전하게 파기됩니다. 귀하의 소중한 식별 정보는 철저히 비밀이 보장됩니다.
+        </span>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px; background-color: #f8f9fa; padding: 18px; border-radius: 6px; border: 1px solid #ced4da;">
+          <div style="display: flex; flex-direction: column; gap: 5px;">
+            <span style="font-size: 13.5px; font-weight: bold; color: #495057;">주민등록번호 (하이픈 포함 13자리 전체 기입) *</span>
+            <input type="text" id="c3_privacy_rrn" placeholder="000000-0000000" maxlength="14" style="padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" required>
+          </div>
+          
+          <div style="display: flex; gap: 12px; margin-top: 4px;">
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 5px;">
+              <span style="font-size: 13.5px; font-weight: bold; color: #495057;">은행명 *</span>
+              <input type="text" id="c3_privacy_bank" placeholder="예: 국민은행" style="padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" required>
+            </div>
+            <div style="flex: 2; display: flex; flex-direction: column; gap: 5px;">
+              <span style="font-size: 13.5px; font-weight: bold; color: #495057;">계좌번호 (하이픈 포함) *</span>
+              <input type="text" id="c3_privacy_account" placeholder="000-000000-00000" style="padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" required>
+            </div>
           </div>
         </div>
       </div>
