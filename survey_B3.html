@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B. 주요 감축기술 전망 - 설비 운영비용(OPEX)</title>
+    <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .graph-image-container {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        .graph-image-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .graph-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* 메인 질문 블록 강조 스타일 (B3 운영비 버전) */
+        .main-question-block {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin: 25px 0;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        .main-question-block h3 {
+            font-size: 20px;
+            font-weight: 800;
+            display: inline-block;
+            border-bottom: 2px solid #1f2937;
+            margin-bottom: 12px;
+            padding-bottom: 2px;
+        }
+        .text-underline { text-decoration: underline; }
+        .text-red-bold { color: #ef4444; font-weight: 700; }
+
+        /* 아코디언 및 내부 폼 스타일 계승 */
+        .accordion-wrapper { margin-top: 30px; }
+        .accordion-item {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            margin-bottom: 15px;
+            background: #ffffff;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        .accordion-item.open { border-color: var(--accent-color); }
+        .accordion-header {
+            background: #f8fafc;
+            padding: 18px 24px;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--primary-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .accordion-item.open .accordion-header { background: #eff6ff; border-bottom: 1px solid var(--border-color); }
+        .accordion-content { padding: 25px 24px; display: none; }
+        .accordion-item.open .accordion-content { display: block; }
+
+        /* 회색 기술 설명 배경 박스 복원 */
+        .tech-mini-desc {
+            font-size: 14.5px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            text-align: justify;
+        }
+
+        /* 테이블 매트릭스 레이아웃 계승 */
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        .matrix-table th, .matrix-table td {
+            border: 1px solid var(--border-color);
+            padding: 14px 12px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .matrix-table th {
+            background-color: #f8fafc;
+            font-size: 14px;
+        }
+        .matrix-table td.col-title {
+            background-color: #f1f5f9;
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 15px;
+            text-align: left;
+            padding-left: 15px;
+        }
+
+        /* 삼색 시나리오 컬러 테마 계승 */
+        .th-adv { color: #2563eb !important; font-weight: 700 !important; }
+        .th-mod { color: #10b981 !important; font-weight: 700 !important; }
+        .th-con { color: #ef4444 !important; font-weight: 700 !important; }
+
+        .input-unit-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 130px;
+            margin: 0 auto;
+        }
+        .input-unit-wrapper input {
+            width: 100%;
+            padding: 10px 35px 10px 12px;
+            font-size: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-align: right;
+            outline: none;
+        }
+        .input-adv:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .input-mod:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
+        .input-con:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1); }
+        .input-pct { position: absolute; right: 12px; font-size: 14px; color: var(--text-muted); font-weight: 600; }
+
+        .dynamic-tech-text { color: var(--primary-color); font-weight: 700; }
+        .dynamic-year-text { color: var(--accent-color); font-weight: 700; }
+
+        .question-text-block {
+            font-size: 15px;
+            line-height: 1.6;
+            background: #f8fafc;
+            padding: 15px 18px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent-color);
+            text-align: justify;
+        }
+
+        .constraint-hint-list {
+            margin-top: 8px;
+            padding-left: 0;
+            list-style: none;
+            text-align: left;
+        }
+        .constraint-hint-list li {
+            font-size: 12px;
+            line-height: 1.4;
+            color: #64748b;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="survey-container">
+    <header class="survey-header">
+        <h1>탄소중립 기술DB 기반 온실가스 감축량 평가 과제<br><span style="font-size: 18px; font-weight: 400; opacity: 0.9;">(반도체 및 디스플레이 산업)</span></h1>
+        <div class="subtitle">B. 주요 감축기술 전망 (기술 비용/성능 전망)</div>
+    </header>
+
+    <main class="survey-content">
+        <!-- 상단 가이드라인 공통 안내 박스 계승 -->
+        <div class="notice-container" style="background-color: #f0f4f8; border-left: 5px solid var(--primary-color); border-radius: var(--radius); padding: 24px; margin-bottom: 30px; border-top: 1px solid #d9e2ec; border-right: 1px solid #d9e2ec; border-bottom: 1px solid #d9e2ec;">
+            <ul style="list-style-type: none; padding-left: 0; margin: 0;">
+                <li style="font-size: 15px; line-height: 1.6; margin-bottom: 12px; color: #334e68; text-align: justify;">※ 본 조사는 실측값이 아닌 미래 전망치에 대한 귀하의 전문적 판단을 기입하는 조사입니다.</li>
+                <li style="font-size: 15px; line-height: 1.6; margin-bottom: 12px; color: #334e68; text-align: justify;">※ 응답 내용은 소속 기관의 공식 의견이나 개별 기관의 기술 전망을 의미하지 않으며, 반도체 및 디스플레이 산업 전반의 평균적인 기술 변화 가능성을 파악하기 위한 것입니다.</li>
+                <li style="font-size: 15px; line-height: 1.6; margin-bottom: 12px; color: #334e68; text-align: justify;">※ 제시된 모든 기술을 세부적으로 알고 계실 필요는 없습니다. 각 기술 설명을 참고하시어, 현재까지의 산업 경험과 전문적 판단에 비추어 예상 가능한 범위에서 응답해 주시면 됩니다.</li>
+                <li style="font-size: 15px; line-height: 1.6; color: #334e68; text-align: justify;">※ 본 조사는 전문가 의견을 종합해 기술별 전망 범위를 파악하기 위한 조사입니다. 확정적인 수치가 아니더라도, 높고 낮음의 방향성 및 대략적인 수준에 근거하여 의견을 주시면 감사하겠습니다.</li>
+            </ul>
+        </div>
+
+        <!-- 문 B3 메인 질문 영역 배치 -->
+        <div class="main-question-block">
+            <h3>문 B3.</h3>
+            <p style="margin-bottom: 16px; text-align: justify;">
+                반도체 및 디스플레이 산업의 <span class="text-underline">설비 운영비 절감률 전망</span>을 위한 조사입니다. <span class="text-red-bold">기술 성숙 및 노하우 축적에 의한 운영 효율화를 가정하여 주십시오.</span>
+            </p>
+            <p style="margin-bottom: 0; text-align: justify;">
+                귀하께서는 <span class="text-underline">① 최초 상용화 시점</span>에 투자가 이루어질 경우 <span class="text-red-bold">단위생산량 당 설비 운영비용(인건비, 재료비 등)이 100이라고 할 때</span> <span class="text-underline">② 50% 상용화 시점</span>에 투자가 이루어질 경우 <span class="text-underline">설비 운영비용을 얼마나 절감할 수 있을 것이라고 예상</span>하십니까?
+            </p>
+        </div>
+
+        <div class="graph-image-container">
+            <div class="graph-title">&lt; 설비 운영비용 절감률 전망 시나리오 추이 &gt;</div>
+            <img src="b3.png" alt="설비 운영비용 절감률 전망">
+        </div>
+
+
+
+        <!-- 선행연구 참고자료 박스 영구 고정 -->
+        <div class="reference-container" style="background-color: #fffbf0; border: 1px solid #fbebbb; border-radius: var(--radius); padding: 18px 20px; margin: 25px 0;">
+            <strong style="font-size: 15px; color: #b7791f; display: block; margin-bottom: 6px;">&lt;비용/성능 전망 참고자료&gt;</strong>
+            <p style="font-size: 14.5px; color: #744210; margin-bottom: 0; line-height: 1.6; text-align: justify;">
+                선행연구들에 따르면 50% 상용화 시점에서 제조업 전반의 비용 절감률은 약 30%이며, 많은 기술들이 20~40%의 범위에 분포합니다 (Dutton & Thomas, 1984; Nagy et al., 2013).
+            </p>
+        </div>
+
+        <p style="font-size: 15px; color: var(--text-muted); margin-bottom: 20px;">
+            ※ 아래의 각 기술 항목을 클릭하시면 입력창이 활성화됩니다. 각 기술별로 <strong>1 ~ 99% 사이의 값</strong>으로 응답하여 주십시오.<br>
+            ※ 아래의 각 기술 항목을 클릭하시면 입력창이 활성화됩니다. 각 기술별로 <strong>낙관 &gt; 중립 &gt; 보수 의 대소관계를 고려</strong>하여 응답하여 주십시오.
+        </p>
+
+        <!-- 8대 핵심 기술 아코디언 wrapper (B3 스펙 동기화) -->
+        <div class="accordion-wrapper">
+            
+            <!-- 기술 1 -->
+            <div class="accordion-item open" id="item_T1">
+                <div class="accordion-header" onclick="toggleAccordion('T1')">
+                    <span>1. 저온 플라즈마 산화 공정 (공정 개선)</span>
+                    <span class="accordion-icon" id="icon_T1">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="tech-mini-desc">고온 열 산화를 대신해 플라즈마를 도입하여 저온에서 산화시키는 기술입니다.</div>
+                    <div class="question-text-block">
+                        귀하께서 응답하신 <span class="dynamic-tech-text">"저온 플라즈마 산화 공정"</span> 기술이 ① 최초 상용화 시점(<span id="T1_First_Txt" class="dynamic-year-text">----</span>년) 대비 ② 50% 상용화 시점(<span id="T1_50Pct_Txt" class="dynamic-year-text">----</span>년)에 도달할 시의 예측치를 작성해 주십시오.
+                    </div>
+                    <table class="matrix-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40%;">전망 대상</th>
+                                <th style="width: 20%;" class="th-adv">낙관적 전망 (Adv)</th>
+                                <th style="width: 20%;" class="th-mod">중립적 전망 (Mod)</th>
+                                <th style="width: 20%;" class="th-con">비관적 전망 (Con)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="col-title">설비 운영비용 절감률</td>
+                                <td>
+                                    <div class="input-unit-wrapper"><input type="number" id="T1_B3_Adv" class="input-adv" min="1" max="99"><span class="input-pct">%</span></div>
+                                    <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립</li></ul>
+                                </td>
+                                <td>
+                                    <div class="input-unit-wrapper"><input type="number" id="T1_B3_Mod" class="input-mod" min="1" max="99"><span class="input-pct">%</span></div>
+                                    <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 중립 &gt; 비관</li></ul>
+                                </td>
+                                <td>
+                                    <div class="input-unit-wrapper"><input type="number" id="T1_B3_Con" class="input-con" min="1" max="99"><span class="input-pct">%</span></div>
+                                    <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립 &gt; 비관</li></ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 기술 2 -->
+            <div class="accordion-item" id="item_T2">
+                <div class="accordion-header" onclick="toggleAccordion('T2')">
+                    <span>2. AI기반 극저온 식각 공정 (공정 개선)</span>
+                    <span class="accordion-icon" id="icon_T2">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="tech-mini-desc">식각 공정을 낮은 온도에서 수행하여 에너지 소모를 줄이는 기술입니다.</div>
+                    <div class="question-text-block">
+                        귀하께서 응답하신 <span class="dynamic-tech-text">"AI기반 극저온 식각 공정"</span> 기술이 ① 최초 상용화 시점(<span id="T2_First_Txt" class="dynamic-year-text">----</span>년) 대비 ② 50% 상용화 시점(<span id="T2_50Pct_Txt" class="dynamic-year-text">----</span>년)에 도달할 시의 예측치를 작성해 주십시오.
+                    </div>
+                    <table class="matrix-table">
+                        <thead><tr><th style="width: 40%;">전망 대상</th><th class="th-adv">낙관적 전망 (Adv)</th><th class="th-mod">중립적 전망 (Mod)</th><th class="th-con">비관적 전망 (Con)</th></tr></thead>
+                        <tbody><tr><td class="col-title">설비 운영비용 절감률</td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T2_B3_Adv" class="input-adv" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립</li></ul>
+                            </td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T2_B3_Mod" class="input-mod" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 중립 &gt; 비관</li></ul>
+                            </td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T2_B3_Con" class="input-con" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립 &gt; 비관</li></ul>
+                            </td>
+                        </tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 기술 3 -->
+            <div class="accordion-item" id="item_T3">
+                <div class="accordion-header" onclick="toggleAccordion('T3')">
+                    <span>3. ALD 증착 및 저온 플라즈마 이온주입 공정 (공정 개선)</span>
+                    <span class="accordion-icon" id="icon_T3">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="tech-mini-desc">원자층 증착(증착공정 미세화)하여 저온에서 이루어지도록 하는 기술입니다.</div>
+                    <div class="question-text-block">
+                        귀하께서 응답하신 <span class="dynamic-tech-text">"ALD 증착 및 저온 플라즈마 이온주입 공정"</span> 기술이 ① 최초 상용화 시점(<span id="T3_First_Txt" class="dynamic-year-text">----</span>년) 대비 ② 50% 상용화 시점(<span id="T3_50Pct_Txt" class="dynamic-year-text">----</span>년)에 도달할 시의 예측치를 작성해 주십시오.
+                    </div>
+                    <table class="matrix-table">
+                        <thead><tr><th style="width: 40%;">전망 대상</th><th class="th-adv">낙관적 전망 (Adv)</th><th class="th-mod">중립적 전망 (Mod)</th><th class="th-con">비관적 전망 (Con)</th></tr></thead>
+                        <tbody><tr><td class="col-title">설비 운영비용 절감률</td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T3_B3_Adv" class="input-adv" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립</li></ul>
+                            </td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T3_B3_Mod" class="input-mod" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 중립 &gt; 비관</li></ul>
+                            </td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T3_B3_Con" class="input-con" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립 &gt; 비관</li></ul>
+                            </td>
+                        </tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 기술 4 -->
+            <div class="accordion-item" id="item_T4">
+                <div class="accordion-header" onclick="toggleAccordion('T4')">
+                    <span>4. Hybrid 세정 공정 (공정 개선)</span>
+                    <span class="accordion-icon" id="icon_T4">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="tech-mini-desc">물리적·화학적 세정 방식을 혼합하여 세정 가스와 용수 사용량을 동시에 절감하는 기술입니다.</div>
+                    <div class="question-text-block">
+                        귀하께서 응답하신 <span class="dynamic-tech-text">"Hybrid 세정 공정"</span> 기술이 ① 최초 상용화 시점(<span id="T4_First_Txt" class="dynamic-year-text">----</span>년) 대비 ② 50% 상용화 시점(<span id="T4_50Pct_Txt" class="dynamic-year-text">----</span>년)에 도달할 시의 예측치를 작성해 주십시오.
+                    </div>
+                    <table class="matrix-table">
+                        <thead><tr><th style="width: 40%;">전망 대상</th><th class="th-adv">낙관적 전망 (Adv)</th><th class="th-mod">중립적 전망 (Mod)</th><th class="th-con">비관적 전망 (Con)</th></tr></thead>
+                        <tbody><tr><td class="col-title">설비 운영비용 절감률</td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T4_B3_Adv" class="input-adv" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립</li></ul>
+                            </td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T4_B3_Mod" class="input-mod" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 중립 &gt; 비관</li></ul>
+                            </td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T4_B3_Con" class="input-con" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립 &gt; 비관</li></ul>
+                            </td>
+                        </tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 기술 5 -->
+            <div class="accordion-item" id="item_T5">
+                <div class="accordion-header" onclick="toggleAccordion('T5')">
+                    <span>5. 저 GWP 가스 이용 식각 공정 (저 GWP 가스 개발)</span>
+                    <span class="accordion-icon" id="icon_T5">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="tech-mini-desc">기존 가스(SF6, CH4 등)를 대신하여 낮은 GWP 가스로 식각하는 기술입니다.</div>
+                    <div class="question-text-block">
+                        귀하께서 응답하신 <span class="dynamic-tech-text">"저 GWP 가스 이용 식각 공정"</span> 기술이 ① 최초 상용화 시점(<span id="T5_First_Txt" class="dynamic-year-text">----</span>년) 대비 ② 50% 상용화 시점(<span id="T5_50Pct_Txt" class="dynamic-year-text">----</span>년)에 도달할 시의 예측치를 작성해 주십시오.
+                    </div>
+                    <table class="matrix-table">
+                        <thead><tr><th style="width: 40%;">전망 대상</th><th class="th-adv">낙관적 전망 (Adv)</th><th class="th-mod">중립적 전망 (Mod)</th><th class="th-con">비관적 전망 (Con)</th></tr></thead>
+                        <tbody><tr><td class="col-title">설비 운영비용 절감률</td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T5_B3_Adv" class="input-adv" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립</li></ul>
+                            </td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T5_B3_Mod" class="input-mod" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 중립 &gt; 비관</li></ul>
+                            </td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T5_B3_Con" class="input-con" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립 &gt; 비관</li></ul>
+                            </td>
+                        </tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 기술 6 -->
+            <div class="accordion-item" id="item_T6">
+                <div class="accordion-header" onclick="toggleAccordion('T6')">
+                    <span>6. 저 GWP 가스 이용 증착 공정 (저 GWP 가스 개발)</span>
+                    <span class="accordion-icon" id="icon_T6">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="tech-mini-desc">기존 가스(N2O 등)를 대신하여 낮은 GWP 가스로 증착하는 기술입니다.</div>
+                    <div class="question-text-block">
+                        귀하께서 응답하신 <span class="dynamic-tech-text">"저 GWP 가스 이용 증착 공정"</span> 기술이 ① 최초 상용화 시점(<span id="T6_First_Txt" class="dynamic-year-text">----</span>년) 대비 ② 50% 상용화 시점(<span id="T6_50Pct_Txt" class="dynamic-year-text">----</span>년)에 도달할 시의 예측치를 작성해 주십시오.
+                    </div>
+                    <table class="matrix-table">
+                        <thead><tr><th style="width: 40%;">전망 대상</th><th class="th-adv">낙관적 전망 (Adv)</th><th class="th-mod">중립적 전망 (Mod)</th><th class="th-con">비관적 전망 (Con)</th></tr></thead>
+                        <tbody><tr><td class="col-title">설비 운영비용 절감률</td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T6_B3_Adv" class="input-adv" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립</li></ul>
+                            </td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T6_B3_Mod" class="input-mod" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 중립 &gt; 비관</li></ul>
+                            </td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T6_B3_Con" class="input-con" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립 &gt; 비관</li></ul>
+                            </td>
+                        </tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 기술 7 -->
+            <div class="accordion-item" id="item_T7">
+                <div class="accordion-header" onclick="toggleAccordion('T7')">
+                    <span>7. 저 GWP 가스 이용 세정 공정 (저 GWP 가스 개발)</span>
+                    <span class="accordion-icon" id="icon_T7">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="tech-mini-desc">기존 가스(NF3 등)를 대신하여 낮은 GWP 가스로 세정하는 기술입니다.</div>
+                    <div class="question-text-block">
+                        귀하께서 응답하신 <span class="dynamic-tech-text">"저 GWP 가스 이용 세정 공정"</span> 기술이 ① 최초 상용화 시점(<span id="T7_First_Txt" class="dynamic-year-text">----</span>년) 대비 ② 50% 상용화 시점(<span id="T7_50Pct_Txt" class="dynamic-year-text">----</span>년)에 도달할 시의 예측치를 작성해 주십시오.
+                    </div>
+                    <table class="matrix-table">
+                        <thead><tr><th style="width: 40%;">전망 대상</th><th class="th-adv">낙관적 전망 (Adv)</th><th class="th-mod">중립적 전망 (Mod)</th><th class="th-con">비관적 전망 (Con)</th></tr></thead>
+                        <tbody><tr><td class="col-title">설비 운영비용 절감률</td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T7_B3_Adv" class="input-adv" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립</li></ul>
+                            </td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T7_B3_Mod" class="input-mod" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 중립 &gt; 비관</li></ul>
+                            </td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T7_B3_Con" class="input-con" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립 &gt; 비관</li></ul>
+                            </td>
+                        </tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 기술 8 -->
+            <div class="accordion-item" id="item_T8">
+                <div class="accordion-header" onclick="toggleAccordion('T8')">
+                    <span>8. 증착/세정 공정용 Heat-cat-wet (후처리 기술)</span>
+                    <span class="accordion-icon" id="icon_T8">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="tech-mini-desc">증착/세정 공정에서 배출되는 가스를 히터와 촉매를 사용해 낮은 온도에서 처리하는 기술입니다.</div>
+                    <div class="question-text-block">
+                        귀하께서 응답하신 <span class="dynamic-tech-text">"증착/세정 공정용 Heat-cat-wet"</span> 기술이 ① 최초 상용화 시점(<span id="T8_First_Txt" class="dynamic-year-text">----</span>년) 대비 ② 50% 상용화 시점(<span id="T8_50Pct_Txt" class="dynamic-year-text">----</span>년)에 도달할 시의 예측치를 작성해 주십시오.
+                    </div>
+                    <table class="matrix-table">
+                        <thead><tr><th style="width: 40%;">전망 대상</th><th class="th-adv">낙관적 전망 (Adv)</th><th class="th-mod">중립적 전망 (Mod)</th><th class="th-con">비관적 전망 (Con)</th></tr></thead>
+                        <tbody><tr><td class="col-title">설비 운영비용 절감률</td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T8_B3_Adv" class="input-adv" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립</li></ul>
+                            </td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T8_B3_Mod" class="input-mod" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 중립 &gt; 비관</li></ul>
+                            </td>
+                            <td>
+                                <div class="input-unit-wrapper"><input type="number" id="T8_B3_Con" class="input-con" min="1" max="99"><span class="input-pct">%</span></div>
+                                <ul class="constraint-hint-list"><li>제약 요건 1: 1~99% 사이로 입력</li><li>제약 요건 2: 낙관 &gt; 중립 &gt; 비관</li></ul>
+                            </td>
+                        </tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="btn-container">
+            <a href="survey_B2.html" class="btn btn-secondary">이전</a>
+            <button type="button" class="btn btn-primary" onclick="validateB3AndNext()">에너지 소비 감소율(B4) 전망으로</button>
+        </div>
+    </main>
+</div>
+
+<script>
+    function toggleAccordion(techId) {
+        const item = document.getElementById('item_' + techId);
+        if (item.classList.contains('open')) {
+            item.classList.remove('open');
+        } else {
+            item.classList.add('open');
+        }
+    }
+
+    // 로드 시 B1 데이터 매핑 및 기존 임시 데이터 세션 복원
+    window.onload = function() {
+        for(let i = 1; i <= 8; i++) {
+            const firstYear = sessionStorage.getItem(`T${i}_B1_First`) || "----";
+            const p50Year = sessionStorage.getItem(`T${i}_B1_50Pct`) || "----";
+            
+            const pFirst = document.getElementById(`T${i}_First_Txt`);
+            const p50 = document.getElementById(`T${i}_50Pct_Txt`);
+            
+            if(pFirst) pFirst.innerText = firstYear;
+            if(p50) p50.innerText = p50Year;
+            
+            const scTypes = ['Adv', 'Mod', 'Con'];
+            scTypes.forEach(sc => {
+                const savedVal = sessionStorage.getItem(`T${i}_B3_${sc}`);
+                const inputEl = document.getElementById(`T${i}_B3_${sc}`);
+                if(inputEl && savedVal) inputEl.value = savedVal;
+            });
+        }
+    }
+
+    // 8대 기술 전체 반복 유효성 및 대소관계 검증
+    function validateB3AndNext() {
+        for (let i = 1; i <= 8; i++) {
+            const advEl = document.getElementById(`T${i}_B3_Adv`);
+            const modEl = document.getElementById(`T${i}_B3_Mod`);
+            const conEl = document.getElementById(`T${i}_B3_Con`);
+
+            if(!advEl || !modEl || !conEl) continue;
+
+            const adv = parseInt(advEl.value);
+            const mod = parseInt(modEl.value);
+            const con = parseInt(conEl.value);
+
+            if (isNaN(adv) || isNaN(mod) || isNaN(con)) {
+                alert(`${i}번 기술의 설비 운영비용 절감률 수치를 모두 입력해 주세요.`);
+                document.getElementById(`item_T${i}`).classList.add('open');
+                advEl.focus();
+                return;
+            }
+
+            if (adv < 1 || adv > 99 || mod < 1 || mod > 99 || con < 1 || con > 99) {
+                alert(`입력값은 1%에서 99% 사이의 정수여야 합니다. (${i}번 기술)`);
+                document.getElementById(`item_T${i}`).classList.add('open');
+                return;
+            }
+
+            if (adv <= mod || mod <= con) {
+                alert(`[수치 논리 오류] ${i}번 기술의 설비 운영비용 절감률 전망값은\n'낙관적(${adv}%) > 중립적(${mod}%) > 비관적(${con}%)' 순이어야 합니다.`);
+                document.getElementById(`item_T${i}`).classList.add('open');
+                advEl.focus();
+                return;
+            }
+            
+            sessionStorage.setItem(`T${i}_B3_Adv`, adv);
+            sessionStorage.setItem(`T${i}_B3_Mod`, mod);
+            sessionStorage.setItem(`T${i}_B3_Con`, con);
+        }
+        
+        location.href = 'survey_B4.html';
+    }
+</script>
+</body>
+</html>
