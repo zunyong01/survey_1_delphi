@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>설문조사 최종 제출 및 검토</title>
+    <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .submit-info-box {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 35px 30px;
+            margin: 30px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            text-align: left;
+        }
+        .submit-info-box h3 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary-color);
+            border-bottom: 2px solid #1f2937;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+        .info-paragraph {
+            font-size: 15.5px;
+            color: #334e68;
+            line-height: 1.8;
+            margin-bottom: 18px;
+            text-align: justify;
+        }
+        .closing-sign {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border-color);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            text-align: right;
+        }
+
+        /* 공통 테이블 디자인 스펙 및 데이터 가운데 정렬 반영 */
+        .review-split-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0 40px 0;
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.01);
+        }
+        .review-split-table th, .review-split-table td {
+            border: 1px solid var(--border-color);
+            padding: 12px 10px;
+            vertical-align: middle;
+            font-size: 14px;
+            text-align: center; /* 모든 확인 값 가운데 정렬 */
+        }
+        .review-split-table th {
+            background-color: #f8fafc;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .review-split-table td.tech-title-col {
+            background-color: #f1f5f9;
+            color: var(--primary-color);
+            font-weight: 700;
+            text-align: center; /* 기술 명칭 열도 요구사항에 따라 가운데 정렬 */
+            line-height: 1.4;
+            width: 32%;
+        }
+        
+        /* 인라인 에디터 인풋 폼 스타일 및 가운데 정렬 */
+        .inline-edit-input {
+            width: 100%;
+            padding: 8px;
+            font-size: 14.5px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            text-align: center; /* 입력 수치 가운데 정렬 */
+            outline: none;
+        }
+        .inline-edit-input:focus { border-color: var(--accent-color); }
+        .input-year-size { max-width: 85px; color: var(--accent-color); font-weight: 600; }
+        .input-pct-size { max-width: 65px; font-weight: 600; }
+        
+        .input-adv-inline { color: #2563eb; }
+        .input-mod { color: #10b981; }
+        .input-con-inline { color: #ef4444; }
+
+        .review-textarea {
+            width: 100%;
+            height: 75px;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            resize: vertical;
+            box-sizing: border-box;
+            font-family: inherit;
+            line-height: 1.5;
+            display: block;
+            text-align: center; /* 판단 근거 텍스트창 정렬 보정 */
+        }
+        .review-textarea:focus { border-color: var(--accent-color); }
+
+        /* 테이블 파트 구분을 위한 섹션 서브 타이틀 스타일 */
+        .table-section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-align: left;
+            margin-top: 35px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .table-section-title::before {
+            content: "■";
+            font-size: 14px;
+            color: var(--accent-color);
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            width: 45px; height: 45px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div style="text-align: center; line-height: 1.7;">
+        작성하신 전체 정량 전망 및 기술별 근거 데이터를 시트에 안전하게 기록 중입니다.<br>
+        <span style="color: #ef4444; font-weight: 600;">데이터 전송 및 다중 적재 제어로 인해 대략 20~30초 정도 소요될 수 있으니 창을 닫지 마십시오.</span>
+    </div>
+</div>
+
+<div class="survey-container">
+    <header class="survey-header">
+        <h1>탄소중립 기술DB 기반 온실가스 감축량 평가 과제<br><span style="font-size: 18px; font-weight: 400; opacity: 0.9;">(반도체 및 디스플레이 산업)</span></h1>
+        <div class="subtitle">B. 주요 감축기술 전망 (기술 비용/성능 전망)</div>
+    </header>
+
+    <main class="survey-content">
+        <h2>설문 최종 검토 및 제출</h2>
+        
+        <div class="submit-info-box">
+            <h3>종합 검토 및 의견 수정 안내</h3>
+            <p class="info-paragraph">
+                귀하께서 문 B1~B4 단계에 걸쳐 기입하신 8대 감축기술의 전체 응답값입니다. 
+            </p>
+            <p class="info-paragraph">
+                검토 편의를 위해 기술별로 [B1 연도] / [B2~B3 비용] / [B4 에너지] / [판단 근거]의 총 4가지 파트로 분리 배치하였습니다. 각 입력창 내에서 자유롭게 수정하실 수 있으며, 수정하실 경우 수정한 값으로 최종 입력됩니다.
+            </p>
+        </div>
+
+        <!-- 파트 1: B1 상용화 시점 테이블 -->
+        <div class="table-section-title">파트 1. 문 B1. 기술 상용화 시점 예측 검토 (단위: 년도)</div>
+        <table class="review-split-table">
+            <thead>
+                <tr>
+                    <th style="width: 32%;">대상 감축기술 항목</th>
+                    <th style="width: 34%;">최초 상용화 시점 (연도)</th>
+                    <th style="width: 34%;">50% 상용화 시점 (연도)</th>
+                </tr>
+            </thead>
+            <tbody id="b1ReviewBody">
+                <!-- 자바스크립트 동적 매핑 -->
+            </tbody>
+        </table>
+
+        <!-- 파트 2: B2~B3 비용 절감률 테이블 -->
+        <div class="table-section-title">파트 2. 문 B2~B3. 비용 절감률 시나리오 검토 (단위: %)</div>
+        <table class="review-split-table">
+            <thead>
+                <tr>
+                    <th rowspan="2" style="width: 32%;">대상 감축기술 항목</th>
+                    <th colspan="3" style="width: 34%;">B2. 설비 구매비용 절감률</th>
+                    <th colspan="3" style="width: 34%;">B3. 설비 운영비용 절감률</th>
+                </tr>
+                <tr>
+                    <th style="color: #2563eb;">낙관</th><th style="color: #10b981;">중립</th><th style="color: #ef4444;">비관</th>
+                    <th style="color: #2563eb;">낙관</th><th style="color: #10b981;">중립</th><th style="color: #ef4444;">비관</th>
+                </tr>
+            </thead>
+            <tbody id="b23ReviewBody">
+                <!-- 자바스크립트 동적 매핑 -->
+            </tbody>
+        </table>
+
+        <!-- 파트 3: B4 에너지 소비 절감률 테이블 -->
+        <div class="table-section-title">파트 3. 문 B4. 에너지 소비 절감률 시나리오 검토 (단위: %)</div>
+        <table class="review-split-table">
+            <thead>
+                <tr>
+                    <th rowspan="2" style="width: 32%;">대상 감축기술 항목</th>
+                    <th colspan="3" style="width: 68%;">B4. 단위생산량 당 에너지 소비 절감률 전망</th>
+                </tr>
+                <tr>
+                    <th style="color: #2563eb;">낙관적 전망 (Adv)</th>
+                    <th style="color: #10b981;">중립적 전망 (Mod)</th>
+                    <th style="color: #ef4444;">비관적 전망 (Con)</th>
+                </tr>
+            </thead>
+            <tbody id="b4ReviewBody">
+                <!-- 자바스크립트 동적 매핑 -->
+            </tbody>
+        </table>
+
+        <!-- 파트 4: 견해 판단 근거 테이블 -->
+        <div class="table-section-title">파트 4. 기술별 견해 판단 근거 기술창 (선택 입력 항목)</div>
+        <table class="review-split-table">
+            <thead>
+                <tr>
+                    <th style="width: 32%;">대상 감축기술 항목</th>
+                    <th style="width: 68%;">견해 판단 근거 서술 (선택 입력 항목)</th>
+                </tr>
+            </thead>
+            <tbody id="reasonReviewBody">
+                <!-- 자바스크립트 동적 매핑 -->
+            </tbody>
+        </table>
+
+
+        <div class="btn-container" style="margin-top: 35px;">
+            <a href="survey_B4.html" class="btn btn-secondary">이전 단계로</a>
+            <button type="button" class="btn btn-primary" style="background-color: #059669; font-weight: 800;" onclick="submitFinalDataPack()">설문 제출</button>
+        </div>
+    </main>
+</div>
+
+<script>
+    const techTitles = [
+        "1. 저온 플라즈마 산화 공정",
+        "2. AI기반 극저온 식각 공정",
+        "3. ALD 증착 및 저온 플라즈마 이온주입 공정",
+        "4. Hybrid 세정 공정",
+        "5. 저 GWP 가스 이용 식각 공정",
+        "6. 저 GWP 가스 이용 증착 공정",
+        "7. 저 GWP 가스 이용 세정 공정",
+        "8. 증착/세정 공정용 Heat-cat-wet"
+    ];
+
+    window.onload = function() {
+        // [1] 파트 1. B1 연도 데이터 매핑
+        const b1Tbody = document.getElementById("b1ReviewBody");
+        let b1Rows = "";
+        for (let i = 1; i <= 8; i++) {
+            b1Rows += `
+                <tr>
+                    <td class="tech-title-col">${techTitles[i-1]}</td>
+                    <td><input type="number" id="T${i}_B1_First" class="inline-edit-input input-year-size" value="${sessionStorage.getItem(`T${i}_B1_First`)||''}"></td>
+                    <td><input type="number" id="T${i}_B1_50Pct" class="inline-edit-input input-year-size" value="${sessionStorage.getItem(`T${i}_B1_50Pct`)||''}"></td>
+                </tr>
+            `;
+        }
+        b1Tbody.innerHTML = b1Rows;
+
+        // [2] 파트 2. B2~B3 비용 절감률 매트릭스 매핑
+        const b23Tbody = document.getElementById("b23ReviewBody");
+        let b23Rows = "";
+        for (let i = 1; i <= 8; i++) {
+            b23Rows += `
+                <tr>
+                    <td class="tech-title-col">${techTitles[i-1]}</td>
+                    <td><input type="number" id="T${i}_B2_Adv" class="inline-edit-input input-pct-size input-adv-inline" value="${sessionStorage.getItem(`T${i}_B2_Adv`)||''}"></td>
+                    <td><input type="number" id="T${i}_B2_Mod" class="inline-edit-input input-pct-size input-mod" value="${sessionStorage.getItem(`T${i}_B2_Mod`)||''}"></td>
+                    <td><input type="number" id="T${i}_B2_Con" class="inline-edit-input input-pct-size input-con-inline" value="${sessionStorage.getItem(`T${i}_B2_Con`)||''}"></td>
+                    
+                    <td><input type="number" id="T${i}_B3_Adv" class="inline-edit-input input-pct-size input-adv-inline" value="${sessionStorage.getItem(`T${i}_B3_Adv`)||''}"></td>
+                    <td><input type="number" id="T${i}_B3_Mod" class="inline-edit-input input-pct-size input-mod" value="${sessionStorage.getItem(`T${i}_B3_Mod`)||''}"></td>
+                    <td><input type="number" id="T${i}_B3_Con" class="inline-edit-input input-pct-size input-con-inline" value="${sessionStorage.getItem(`T${i}_B3_Con`)||''}"></td>
+                </tr>
+            `;
+        }
+        b23Tbody.innerHTML = b23Rows;
+
+        // [3] 파트 3. B4 에너지 소비 절감률 매핑
+        const b4Tbody = document.getElementById("b4ReviewBody");
+        let b4Rows = "";
+        for (let i = 1; i <= 8; i++) {
+            b4Rows += `
+                <tr>
+                    <td class="tech-title-col">${techTitles[i-1]}</td>
+                    <td><input type="number" id="T${i}_B4_Adv" class="inline-edit-input input-pct-size input-adv-inline" value="${sessionStorage.getItem(`T${i}_B4_Adv`)||''}"></td>
+                    <td><input type="number" id="T${i}_B4_Mod" class="inline-edit-input input-pct-size input-mod" value="${sessionStorage.getItem(`T${i}_B4_Mod`)||''}"></td>
+                    <td><input type="number" id="T${i}_B4_Con" class="inline-edit-input input-pct-size input-con-inline" value="${sessionStorage.getItem(`T${i}_B4_Con`)||''}"></td>
+                </tr>
+            `;
+        }
+        b4Tbody.innerHTML = b4Rows;
+
+        // [4] 파트 4. 기술별 판단 근거 독립 와이드 렌더링
+        const reasonTbody = document.getElementById("reasonReviewBody");
+        let reasonRows = "";
+        for (let i = 1; i <= 8; i++) {
+            reasonRows += `
+                <tr>
+                    <td class="tech-title-col">${techTitles[i-1]}</td>
+                    <td><textarea id="T${i}_B4_Reason" class="review-textarea" placeholder="수치 산정의 학술적 근거 또는 견해 의견을 자유롭게 기입하세요 (선택 항목)">${sessionStorage.getItem(`T${i}_B4_Reason`)||''}</textarea></td>
+                </tr>
+            `;
+        }
+        reasonTbody.innerHTML = reasonRows;
+    }
+
+    function submitFinalDataPack() {
+        for (let i = 1; i <= 8; i++) {
+            const first = parseInt(document.getElementById(`T${i}_B1_First`).value);
+            const p50 = parseInt(document.getElementById(`T${i}_B1_50Pct`).value);
+            
+            const b2A = parseInt(document.getElementById(`T${i}_B2_Adv`).value);
+            const b2M = parseInt(document.getElementById(`T${i}_B2_Mod`).value);
+            const b2C = parseInt(document.getElementById(`T${i}_B2_Con`).value);
+            
+            const b3A = parseInt(document.getElementById(`T${i}_B3_Adv`).value);
+            const b3M = parseInt(document.getElementById(`T${i}_B3_Mod`).value);
+            const b3C = parseInt(document.getElementById(`T${i}_B3_Con`).value);
+            
+            const b4A = parseInt(document.getElementById(`T${i}_B4_Adv`).value);
+            const b4M = parseInt(document.getElementById(`T${i}_B4_Mod`).value);
+            const b4C = parseInt(document.getElementById(`T${i}_B4_Con`).value);
+            
+            const reason = document.getElementById(`T${i}_B4_Reason`).value.trim();
+
+            if(isNaN(first) || isNaN(p50) || isNaN(b2A) || isNaN(b2M) || isNaN(b2C) || isNaN(b3A) || isNaN(b3M) || isNaN(b3C) || isNaN(b4A) || isNaN(b4M) || isNaN(b4C)) {
+                alert(`${i}번 기술의 정량 수치 중 공란이 있습니다. 확인해 주십시오.`);
+                return;
+            }
+            if (first < 1900 || first > 2100 || p50 < 1900 || p50 > 2100) {
+                alert(`상용화 예측 시점 연도를 올바르게 기입해 주세요. (${i}번 기술)`);
+                return;
+            }
+            if (b2A < 1 || b2A > 99 || b2M < 1 || b2M > 99 || b2C < 1 || b2C > 99 ||
+                b3A < 1 || b3A > 99 || b3M < 1 || b3M > 99 || b3C < 1 || b3C > 99 ||
+                b4A < 1 || b4A > 99 || b4M < 1 || b4M > 99 || b4C < 1 || b4C > 99) {
+                alert(`모든 비용 및 절감률 입력값은 1%에서 99% 사이의 정수여야 합니다. (${i}번 기술)`);
+                return;
+            }
+            if(p50 <= first) {
+                alert(`[수치 논리 오류] ${i}번 기술의 50% 상용화 시점은 최초 상용화 시점보다 이후 연도여야 합니다.`);
+                return;
+            }
+            if(b2A <= b2M || b2M <= b2C) {
+                alert(`[수치 논리 오류] ${i}번 기술의 설비 구매비 절감률은 낙관 > 중립 > 비관 순이어야 합니다.`);
+                return;
+            }
+            if(b3A <= b3M || b3M <= b3C) {
+                alert(`[수치 논리 오류] ${i}번 기술의 설비 운영비 절감률은 낙관 > 중립 > 비관 순이어야 합니다.`);
+                return;
+            }
+            if(b4A <= b4M || b4M <= b4C) {
+                alert(`[수치 논리 오류] ${i}번 기술의 에너지 소비 절감률은 낙관 > 중립 > 비관 순이어야 합니다.`);
+                return;
+            }
+
+            // 인라인 정합성 수정 세션 실시간 갱신 적용
+            sessionStorage.setItem(`T${i}_B1_First`, first);
+            sessionStorage.setItem(`T${i}_B1_50Pct`, p50);
+            sessionStorage.setItem(`T${i}_B2_Adv`, b2A);
+            sessionStorage.setItem(`T${i}_B2_Mod`, b2M);
+            sessionStorage.setItem(`T${i}_B2_Con`, b2C);
+            sessionStorage.setItem(`T${i}_B3_Adv`, b3A);
+            sessionStorage.setItem(`T${i}_B3_Mod`, b3M);
+            sessionStorage.setItem(`T${i}_B3_Con`, b3C);
+            sessionStorage.setItem(`T${i}_B4_Adv`, b4A);
+            sessionStorage.setItem(`T${i}_B4_Mod`, b4M);
+            sessionStorage.setItem(`T${i}_B4_Con`, b4C);
+            sessionStorage.setItem(`T${i}_B4_Reason`, reason);
+        }
+
+        if(!confirm("정말로 설문을 최종 제출하시겠습니까? 제출 후에는 수정이 불가능합니다.")) return;
+
+        // 20~30초 지연 안내 오버레이 디스플레이 활성화
+        document.getElementById("loadingOverlay").style.display = "flex";
+
+        const finalPayload = {
+            userName: sessionStorage.getItem("userName"),
+            userCompany: sessionStorage.getItem("userCompany"),
+            userExp: sessionStorage.getItem("userExp"),
+            userPhone: sessionStorage.getItem("userPhone"),
+            userEmail: sessionStorage.getItem("userEmail"),
+            userExpertise: sessionStorage.getItem("userExpertise"),
+            userRole: sessionStorage.getItem("userRole"),
+            userJumin: sessionStorage.getItem("userJumin"),
+            userBank: sessionStorage.getItem("userBank"),
+            userAccount: sessionStorage.getItem("userAccount")
+        };
+
+        for (let i = 1; i <= 8; i++) {
+            finalPayload[`T${i}_B1_First`] = sessionStorage.getItem(`T${i}_B1_First`);
+            finalPayload[`T${i}_B1_50Pct`] = sessionStorage.getItem(`T${i}_B1_50Pct`);
+            finalPayload[`T${i}_B2_Adv`] = sessionStorage.getItem(`T${i}_B2_Adv`);
+            finalPayload[`T${i}_B2_Mod`] = sessionStorage.getItem(`T${i}_B2_Mod`);
+            finalPayload[`T${i}_B2_Con`] = sessionStorage.getItem(`T${i}_B2_Con`);
+            finalPayload[`T${i}_B3_Adv`] = sessionStorage.getItem(`T${i}_B3_Adv`);
+            finalPayload[`T${i}_B3_Mod`] = sessionStorage.getItem(`T${i}_B3_Mod`);
+            finalPayload[`T${i}_B3_Con`] = sessionStorage.getItem(`T${i}_B3_Con`);
+            finalPayload[`T${i}_B4_Adv`] = sessionStorage.getItem(`T${i}_B4_Adv`);
+            finalPayload[`T${i}_B4_Mod`] = sessionStorage.getItem(`T${i}_B4_Mod`);
+            finalPayload[`T${i}_B4_Con`] = sessionStorage.getItem(`T${i}_B4_Con`);
+            finalPayload[`T${i}_B4_Reason`] = sessionStorage.getItem(`T${i}_B4_Reason`);
+        }
+
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwSYmmawBaSzdxVRYUjbFbvaMDRiUQP9w1dVEjkdatX70TPFyPQ-MwtvhFVP1j1J5cjDA/exec"; 
+
+        fetch(GAS_WEB_APP_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(finalPayload)
+        })
+        .then(() => {
+            document.getElementById("loadingOverlay").style.display = "none";
+            alert("설문 조사가 성공적으로 제출되었습니다. 귀한 시간 내어 참여해 주셔서 대단히 감사합니다.");
+            sessionStorage.clear();
+            location.href = "survey_complete.html";
+        })
+        .catch(error => {
+            document.getElementById("loadingOverlay").style.display = "none";
+            console.error("Transmission Error:", error);
+            alert("데이터 전송 중 오류가 발생했습니다. 네트워크 상태를 확인하시거나 관리자에게 문의해 주세요.");
+        });
+    }
+</script>
+</body>
+</html>

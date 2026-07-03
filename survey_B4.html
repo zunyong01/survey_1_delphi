@@ -516,7 +516,7 @@
 
         <div class="btn-container">
             <a href="survey_B3.html" class="btn btn-secondary">이전</a>
-            <button type="button" class="btn btn-primary" style="background-color: #059669;" onclick="validateB4AndSubmitAll()">최종 설문 제출하기</button>
+            <button type="button" class="btn btn-primary" style="background-color: #2563eb;" onclick="validateB4AndGoSubmit()">검토 페이지로 이동</button>
         </div>
     </main>
 </div>
@@ -564,19 +564,20 @@
         }
     }
 
-    // B4 유효성 검사 통과 후 최종 백엔드(GAS 웹앱 API) 파이프라인으로 전송하는 마스터 엔진
-    function validateB4AndSubmitAll() {
-        // 1단계: B4 데이터 정합성 자체 검증
+    // B4 데이터 무결성 검증 후 최종 전송 대기 페이지로 이동시키는 함수
+    function validateB4AndGoSubmit() {
         for (let i = 1; i <= 8; i++) {
             const advEl = document.getElementById(`T${i}_B4_Adv`);
             const modEl = document.getElementById(`T${i}_B4_Mod`);
             const conEl = document.getElementById(`T${i}_B4_Con`);
+            const reasonEl = document.getElementById(`T${i}_B4_Reason`);
 
             if(!advEl || !modEl || !conEl) continue;
 
             const adv = parseInt(advEl.value);
             const mod = parseInt(modEl.value);
             const con = parseInt(conEl.value);
+            const reason = reasonEl ? reasonEl.value.trim() : "";
 
             if (isNaN(adv) || isNaN(mod) || isNaN(con)) {
                 alert(`${i}번 기술의 에너지 소비 절감률 수치를 모두 입력해 주세요.`);
@@ -596,69 +597,15 @@
                 return;
             }
             
-            // 세션 스토리지 보존
+            // 데이터 임시 보존 처리
             sessionStorage.setItem(`T${i}_B4_Adv`, adv);
             sessionStorage.setItem(`T${i}_B4_Mod`, mod);
             sessionStorage.setItem(`T${i}_B4_Con`, con);
+            sessionStorage.setItem(`T${i}_B4_Reason`, reason);
         }
-
-        if(!confirm("정말로 설문을 최종 제출하시겠습니까? 제출 후에는 수정이 불가능합니다.")) return;
-
-        // 로딩 레이어 디스플레이 표출
-        document.getElementById("loadingOverlay").style.display = "flex";
-
-        // 2단계: 그동안 세션 스토리지에 모인 프키/정산/B1/B2/B3/B4 마스터 패키지 조립
-        const finalPayload = {
-            userName: sessionStorage.getItem("userName"),
-            userCompany: sessionStorage.getItem("userCompany"),
-            userExp: sessionStorage.getItem("userExp"),
-            userPhone: sessionStorage.getItem("userPhone"),
-            userEmail: sessionStorage.getItem("userEmail"),
-            userExpertise: sessionStorage.getItem("userExpertise"),
-            userRole: sessionStorage.getItem("userRole"),
-            userJumin: sessionStorage.getItem("userJumin"),
-            userBank: sessionStorage.getItem("userBank"),
-            userAccount: sessionStorage.getItem("userAccount")
-        };
-
-        // K열 구조 매핑 및 정량 전망 패키징 고도화 조립 루프
-        for (let i = 1; i <= 8; i++) {
-            finalPayload[`T${i}_B1_First`] = sessionStorage.getItem(`T${i}_B1_First`);
-            finalPayload[`T${i}_B1_50Pct`] = sessionStorage.getItem(`T${i}_B1_50Pct`);
-            
-            finalPayload[`T${i}_B2_Adv`] = sessionStorage.getItem(`T${i}_B2_Adv`);
-            finalPayload[`T${i}_B2_Mod`] = sessionStorage.getItem(`T${i}_B2_Mod`);
-            finalPayload[`T${i}_B2_Con`] = sessionStorage.getItem(`T${i}_B2_Con`);
-            
-            finalPayload[`T${i}_B3_Adv`] = sessionStorage.getItem(`T${i}_B3_Adv`);
-            finalPayload[`T${i}_B3_Mod`] = sessionStorage.getItem(`T${i}_B3_Mod`);
-            finalPayload[`T${i}_B3_Con`] = sessionStorage.getItem(`T${i}_B3_Con`);
-            
-            finalPayload[`T${i}_B4_Adv`] = sessionStorage.getItem(`T${i}_B4_Adv`);
-            finalPayload[`T${i}_B4_Mod`] = sessionStorage.getItem(`T${i}_B4_Mod`);
-            finalPayload[`T${i}_B4_Con`] = sessionStorage.getItem(`T${i}_B4_Con`);
-        }
-
-        // 배포하신 구글 앱스 스크립트(GAS)의 웹 앱 URL 주소를 여기에 기입하시면 연동이 종료됩니다.
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyzXAvvqE2Gua3zhviCNx17fkgtGYmnLPxi9CybYzxkquUtQpxgyKXFeOywbyoJZs-FNg/exec"; 
-
-        fetch(GAS_WEB_APP_URL, {
-            method: "POST",
-            mode: "no-cors", // CORS 정책 처리 우회 보안 모드 설정
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(finalPayload)
-        })
-        .then(() => {
-            document.getElementById("loadingOverlay").style.display = "none";
-            alert("설문 조사가 성공적으로 제출되었습니다. 귀한 시간 내어 참여해 주셔서 대단히 감사합니다.");
-            sessionStorage.clear(); // 보안 정산 파기 규칙 이행
-            location.href = "survey_complete.html"; // 완료 랜딩 페이지 패스
-        })
-        .catch(error => {
-            document.getElementById("loadingOverlay").style.display = "none";
-            console.error("Transmission Error:", error);
-            alert("데이터 전송 중 오류가 발생했습니다. 네트워크 상태를 확인하시거나 관리자에게 문의해 주세요.");
-        });
+        
+        // 최종 확인 제출 페이지로 패스 전환
+        location.href = 'survey_submit.html';
     }
 </script>
 </body>
