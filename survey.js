@@ -58,10 +58,11 @@ function initDynamicFields() {
     }
 }
 
-// 데이터 실시간 세션 저장
+// 1. 데이터 실시간 세션 저장 함수 보정
 function saveSessionData() {
+    // fields 배열에서 라디오 버튼인 'userExp' 제거
     const fields = [
-        'userName', 'userCompany', 'userExp', 'userPhone', 'userEmail', 
+        'userName', 'userCompany', 'userPhone', 'userEmail', 
         'userRole', 'userRoleEtc', 'userExpertiseEtc', 'userJumin', 'userBank', 'userAccount'
     ];
     
@@ -71,6 +72,12 @@ function saveSessionData() {
             sessionStorage.setItem(id, element.value.trim());
         }
     });
+    
+    // 라디오 버튼(경력) 세션 보존 특화 로직 추가
+    const selectedExp = document.querySelector('input[name="userExp"]:checked');
+    if (selectedExp) {
+        sessionStorage.setItem('userExp', selectedExp.value);
+    }
     
     const privacyAgree = document.getElementById('privacyAgree');
     if (privacyAgree) {
@@ -84,10 +91,10 @@ function saveSessionData() {
     sessionStorage.setItem('userExpertise', JSON.stringify(expertises));
 }
 
-// 세션 데이터 복원 및 화면 상태 맞춤
+// 2. 세션 데이터 화면 복원 함수 보정
 function loadSessionData() {
     const fields = [
-        'userName', 'userCompany', 'userExp', 'userPhone', 'userEmail', 
+        'userName', 'userCompany', 'userPhone', 'userEmail', 
         'userRole', 'userRoleEtc', 'userExpertiseEtc', 'userJumin', 'userBank', 'userAccount'
     ];
     
@@ -97,6 +104,13 @@ function loadSessionData() {
             element.value = sessionStorage.getItem(id);
         }
     });
+
+    // 라디오 버튼(경력) 상태 복원 특화 로직 추가
+    const savedExp = sessionStorage.getItem('userExp');
+    if (savedExp) {
+        const radEl = document.querySelector(`input[name="userExp"][value="${savedExp}"]`);
+        if (radEl) radEl.checked = true;
+    }
 
     const privacyAgree = document.getElementById('privacyAgree');
     if (privacyAgree && sessionStorage.getItem('privacyAgree') === 'true') {
@@ -125,12 +139,16 @@ function loadSessionData() {
     }
 }
 
-// privacy.html 페이지 폼 종합 검증
+// 3. 검증 및 다음 페이지 이동 함수 보정
 function validateAndNext() {
     const agreeCheckbox = document.getElementById('privacyAgree');
     const name = document.getElementById('userName').value.trim();
     const company = document.getElementById('userCompany').value.trim();
-    const exp = document.getElementById('userExp').value.trim();
+    
+    // 이 부분을 getElementById가 아니라 라디오 체크 항목 색출로 변경
+    const selectedExpEl = document.querySelector('input[name="userExp"]:checked');
+    const exp = selectedExpEl ? selectedExpEl.value : '';
+    
     const phone = document.getElementById('userPhone').value.trim();
     const email = document.getElementById('userEmail').value.trim();
     
@@ -161,7 +179,7 @@ function validateAndNext() {
         alert("귀하의 전문 분야를 최소 하나 이상 선택해 주세요.");
         return;
     }
-    if (c1EtcCheckbox.checked && !expertiseEtc) {
+    if (c1EtcCheckbox && c1EtcCheckbox.checked && !expertiseEtc) {
         alert("전문 분야 '기타'의 세부 내용을 입력해 주세요.");
         return;
     }
